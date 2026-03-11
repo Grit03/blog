@@ -6,7 +6,6 @@ import {
 import { PostCard } from "@/components/PostCard";
 import { getPageCategory, getPageExcerpt, getPageDate } from "@/lib/notion";
 import { Categories, MiniCategories } from "@/components/Categories";
-import { FileText, FolderOpen } from "lucide-react";
 
 const CATEGORY_VALUES = ["프로젝트", "딥다이브", "학습정리", "회고"] as const;
 

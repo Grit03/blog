@@ -32,7 +32,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://grit03.vercel.app";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "🍀 Gyuri's Devlog | 깊게 학습하고 탐구하는 공간",
+    default: "김규리 | Moving Forward",
     template: "%s | 김규리",
   },
   description:
@@ -43,14 +43,14 @@ export const metadata: Metadata = {
     type: "website",
     locale: "ko_KR",
     url: siteUrl,
-    siteName: "🍀 Gyuri's Devlog",
-    title: "🍀 Gyuri's Devlog | 깊게 학습하고 탐구하는 공간",
+    siteName: "Gyuri's Devlog",
+    title: "김규리 | Moving Forward",
     description:
       "프로젝트, 딥다이브, 학습정리, 회고를 담는 개발 블로그. 프론트엔드와 웹 개발 경험을 기록합니다.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "🍀 Gyuri's Devlog | 깊게 학습하고 탐구하는 공간",
+    title: "김규리 | Moving Forward",
     description:
       "프로젝트, 딥다이브, 학습정리, 회고를 담는 개발 블로그. 프론트엔드와 웹 개발 경험을 기록합니다.",
   },
