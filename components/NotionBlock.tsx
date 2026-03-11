@@ -44,7 +44,6 @@ function RichTextSpan({ richTexts }: { richTexts: RichTextItemResponse[] }) {
                   width={20}
                   height={20}
                   className="w-5 h-5 shrink-0"
-                  unoptimized
                 />
               )}
               {linkAuthor ? <span className="text-sm text-[#737373]">{linkAuthor}</span> : linkProvider ? <span className="text-sm text-[#737373]">{linkProvider}</span> : null}
@@ -313,7 +312,8 @@ export function NotionBlock({ block }: { block: BlockWithChildren }) {
               width={800}
               height={600}
               className="w-full"
-              imageClassName="rounded-xl w-full max-w-[800px] h-auto"
+              loading="eager"
+              imageClassName="rounded-xl w-full max-w-[800px] mx-auto h-auto"
             />
           )}
           {caption && (

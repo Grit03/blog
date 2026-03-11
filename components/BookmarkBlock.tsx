@@ -69,16 +69,16 @@ export const BookmarkBlock = async ({
   const faviconUrl = meta?.favicon;
 
   return (
-    <div className="mb-4">
+    <div className="mb-3 max-w-[800px] mx-auto">
       <a
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex border border-[#e3e3e3] rounded-lg overflow-hidden hover:bg-[#efefef] transition-colors no-underline"
+        className="flex border border-[#e3e3e3] min-h-[130px] rounded-lg overflow-hidden hover:bg-[#efefef] transition-colors no-underline"
       >
         <div className="flex-1 min-w-0 px-4 py-3 flex flex-col justify-between gap-1.5">
           {meta?.title && (
-            <span className="text-sm font-medium text-foreground line-clamp-1">
+            <span className="text-md font-medium text-foreground line-clamp-1">
               {meta.title}
             </span>
           )}
