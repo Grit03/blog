@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getPage, getPageBlocks, getPageTitle, getFirstImageBlockIds, type BlockWithChildren } from "@/lib/notion";
+import { getPage, getPageBlocks, getPosts, getPageTitle, getFirstImageBlockIds, type BlockWithChildren } from "@/lib/notion";
 import { getPageTags } from "@/lib/notion";
 import { NotionBlocks } from "@/components/NotionBlock";
 import { Tag } from "@/components/PostCard/Tag";
@@ -11,8 +11,17 @@ type Props = {
   params: Promise<{ id: string }>;
 };
 
+/** Next.js 15에서 ISR 적용을 위해 force-static 필요 */
+export const dynamic = "force-static";
 /** ISR: 1시간 캐시. webhook으로 revalidatePath 호출 시 즉시 갱신 */
 export const revalidate = 3600;
+/** 빌드 시 Published 글만 미리 생성 → 첫 방문도 빠름 */
+export async function generateStaticParams() {
+  const posts = await getPosts();
+  return posts.map((page) => ({ id: page.id }));
+}
+/** 빌드 후 새로 발행된 글도 첫 요청 시 생성 후 캐시 */
+export const dynamicParams = true;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
