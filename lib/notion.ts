@@ -206,4 +206,12 @@ export function getPageDate(page: PageObjectResponse): string {
   return `${y}. ${m}. ${day}.`;
 }
 
+/** 페이지 속성에서 status(status type) 추출 */
+export function getPageStatus(page: PageObjectResponse): string | null {
+  const props = page.properties;
+  const p = props["status"] ?? props["Status"];
+  if (!p || p.type !== "status" || !p.status) return null;
+  return p.status.name;
+}
+
 export { notion };
