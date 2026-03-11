@@ -27,7 +27,7 @@ export async function POST(
   // Notion webhook 최초 등록 시 verification_token 확인 요청 처리
   // 서버 로그에서 토큰을 확인한 뒤 Notion UI에 붙여넣으면 활성화 완료
   if (body.verification_token) {
-    console.log("[Notion Webhook] verification_token:", body.verification_token);
+    // console.log("[Notion Webhook] verification_token:", body.verification_token);
     return Response.json({ ok: true });
   }
 
