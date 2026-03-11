@@ -326,6 +326,7 @@ export function NotionBlock({
               width={800}
               height={600}
               sizes="(max-width: 800px) 100vw, 800px"
+              quality={82}
               className="w-full"
               priority={isPriorityImage}
               imageClassName="rounded-xl w-full max-w-[800px] mx-auto h-auto"

@@ -67,6 +67,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" className={cn("font-sans", geist.variable)}>
+      <head>
+        <link rel="preconnect" href="https://img.notionusercontent.com" />
+        <link rel="dns-prefetch" href="https://www.notion.so" />
+        <link rel="dns-prefetch" href="https://prod-files-secure.s3.us-west-2.amazonaws.com" />
+      </head>
       <body className={cn(pretendard.variable, tossface.variable, "antialiased")}>
         <header className="w-full border-b px-10">
           <div className="w-full lg:max-w-6xl mx-auto py-3.5 flex items-center justify-between">

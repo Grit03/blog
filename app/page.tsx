@@ -76,7 +76,7 @@ export default async function Home({ searchParams }: Props) {
             </div>
           ) : (
             <ul className="w-full space-y-2 list-none p-0 m-0">
-              {posts.map((page) => (
+              {posts.map((page, index) => (
                 <li key={page.id}>
                   <PostCard
                     href={`/post/${page.id}`}
@@ -85,6 +85,7 @@ export default async function Home({ searchParams }: Props) {
                     excerpt={getPageExcerpt(page)}
                     tags={getPageTags(page)}
                     date={getPageDate(page)}
+                    priorityImage={index < 2}
                   />
                 </li>
               ))}
