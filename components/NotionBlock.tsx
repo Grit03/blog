@@ -64,12 +64,24 @@ function getBlockContent(block: BlockWithChildren) {
   return (block as any)[type];
 }
 
-function ChildBlocks({ blocks }: { blocks: BlockWithChildren[] }) {
+function ChildBlocks({
+  blocks,
+  firstImageBlockIds,
+}: {
+  blocks: BlockWithChildren[];
+  firstImageBlockIds?: string[] | null;
+}) {
   if (!blocks || blocks.length === 0) return null;
-  return <NotionBlocks blocks={blocks} />;
+  return <NotionBlocks blocks={blocks} firstImageBlockIds={firstImageBlockIds} />;
 }
 
-export function NotionBlock({ block }: { block: BlockWithChildren }) {
+export function NotionBlock({
+  block,
+  firstImageBlockIds,
+}: {
+  block: BlockWithChildren;
+  firstImageBlockIds?: string[] | null;
+}) {
   const content = getBlockContent(block);
 
   switch (block.type) {
@@ -88,7 +100,7 @@ export function NotionBlock({ block }: { block: BlockWithChildren }) {
           </p>
           {block.children.length > 0 && (
             <div className="pl-4">
-              <ChildBlocks blocks={block.children} />
+              <ChildBlocks blocks={block.children} firstImageBlockIds={firstImageBlockIds} />
             </div>
           )}
         </div>
@@ -103,7 +115,7 @@ export function NotionBlock({ block }: { block: BlockWithChildren }) {
           </h1>
           {block.has_children && (
             <div className="pl-4">
-              <ChildBlocks blocks={block.children} />
+              <ChildBlocks blocks={block.children} firstImageBlockIds={firstImageBlockIds} />
             </div>
           )}
         </>
@@ -117,7 +129,7 @@ export function NotionBlock({ block }: { block: BlockWithChildren }) {
           </h2>
           {block.has_children && (
             <div className="pl-4">
-              <ChildBlocks blocks={block.children} />
+              <ChildBlocks blocks={block.children} firstImageBlockIds={firstImageBlockIds} />
             </div>
           )}
         </>
@@ -131,7 +143,7 @@ export function NotionBlock({ block }: { block: BlockWithChildren }) {
           </h3>
           {block.has_children && (
             <div className="pl-4">
-              <ChildBlocks blocks={block.children} />
+              <ChildBlocks blocks={block.children} firstImageBlockIds={firstImageBlockIds} />
             </div>
           )}
         </>
@@ -143,7 +155,7 @@ export function NotionBlock({ block }: { block: BlockWithChildren }) {
           <RichTextSpan richTexts={content.rich_text} />
           {block.children.length > 0 && (
             <ul>
-              <ChildBlocks blocks={block.children} />
+              <ChildBlocks blocks={block.children} firstImageBlockIds={firstImageBlockIds} />
             </ul>
           )}
         </li>
@@ -155,7 +167,7 @@ export function NotionBlock({ block }: { block: BlockWithChildren }) {
           <RichTextSpan richTexts={content.rich_text} />
           {block.children.length > 0 && (
             <ol>
-              <ChildBlocks blocks={block.children} />
+              <ChildBlocks blocks={block.children} firstImageBlockIds={firstImageBlockIds} />
             </ol>
           )}
         </li>
@@ -177,7 +189,7 @@ export function NotionBlock({ block }: { block: BlockWithChildren }) {
           </div>
           {block.children.length > 0 && (
             <div className="pl-6">
-              <ChildBlocks blocks={block.children} />
+              <ChildBlocks blocks={block.children} firstImageBlockIds={firstImageBlockIds} />
             </div>
           )}
         </div>
@@ -190,7 +202,7 @@ export function NotionBlock({ block }: { block: BlockWithChildren }) {
             <RichTextSpan richTexts={content.rich_text} />
           </summary>
           <div className="pl-4 pt-2">
-            <ChildBlocks blocks={block.children} />
+            <ChildBlocks blocks={block.children} firstImageBlockIds={firstImageBlockIds} />
           </div>
         </details>
       );
@@ -209,7 +221,7 @@ export function NotionBlock({ block }: { block: BlockWithChildren }) {
           <RichTextSpan richTexts={content.rich_text} />
           {block.children.length > 0 && (
             <div className="mt-2 not-italic">
-              <ChildBlocks blocks={block.children} />
+              <ChildBlocks blocks={block.children} firstImageBlockIds={firstImageBlockIds} />
             </div>
           )}
         </blockquote>
@@ -225,7 +237,7 @@ export function NotionBlock({ block }: { block: BlockWithChildren }) {
             <RichTextSpan richTexts={content.rich_text} />
             {block.children.length > 0 && (
               <div className="mt-2">
-                <ChildBlocks blocks={block.children} />
+                <ChildBlocks blocks={block.children} firstImageBlockIds={firstImageBlockIds} />
               </div>
             )}
           </div>
@@ -233,21 +245,21 @@ export function NotionBlock({ block }: { block: BlockWithChildren }) {
       );
 
     case "synced_block":
-      return <ChildBlocks blocks={block.children} />;
+      return <ChildBlocks blocks={block.children} firstImageBlockIds={firstImageBlockIds} />;
 
     case "column_list":
       return (
         <div className="flex gap-4 mb-4">
           {block.children.map((column) => (
             <div key={column.id} className="flex-1 min-w-0">
-              <ChildBlocks blocks={column.children} />
+              <ChildBlocks blocks={column.children} firstImageBlockIds={firstImageBlockIds} />
             </div>
           ))}
         </div>
       );
 
     case "column":
-      return <ChildBlocks blocks={block.children} />;
+      return <ChildBlocks blocks={block.children} firstImageBlockIds={firstImageBlockIds} />;
 
     case "table": {
       const hasHeader = content.has_column_header;
@@ -303,6 +315,8 @@ export function NotionBlock({ block }: { block: BlockWithChildren }) {
           ? content.external.url
           : content.file?.url;
       const caption = content.caption?.[0]?.plain_text;
+      const isPriorityImage =
+        firstImageBlockIds?.includes(block.id) ?? false;
       return (
         <figure className="mb-6">
           {src && (
@@ -311,8 +325,9 @@ export function NotionBlock({ block }: { block: BlockWithChildren }) {
               alt={caption || `${content.type} 이미지`}
               width={800}
               height={600}
+              sizes="(max-width: 800px) 100vw, 800px"
               className="w-full"
-              loading="eager"
+              priority={isPriorityImage}
               imageClassName="rounded-xl w-full max-w-[800px] mx-auto h-auto"
             />
           )}
@@ -375,7 +390,13 @@ export function NotionBlock({ block }: { block: BlockWithChildren }) {
   }
 }
 
-export function NotionBlocks({ blocks }: { blocks: BlockWithChildren[] }) {
+export function NotionBlocks({
+  blocks,
+  firstImageBlockIds,
+}: {
+  blocks: BlockWithChildren[];
+  firstImageBlockIds?: string[] | null;
+}) {
   const rendered: React.ReactNode[] = [];
   let i = 0;
 
@@ -391,7 +412,7 @@ export function NotionBlocks({ blocks }: { blocks: BlockWithChildren[] }) {
       rendered.push(
         <ul key={items[0].id} className="mb-4">
           {items.map((item) => (
-            <NotionBlock key={item.id} block={item} />
+            <NotionBlock key={item.id} block={item} firstImageBlockIds={firstImageBlockIds} />
           ))}
         </ul>,
       );
@@ -407,14 +428,16 @@ export function NotionBlocks({ blocks }: { blocks: BlockWithChildren[] }) {
       rendered.push(
         <ol key={items[0].id} className="mb-4">
           {items.map((item) => (
-            <NotionBlock key={item.id} block={item} />
+            <NotionBlock key={item.id} block={item} firstImageBlockIds={firstImageBlockIds} />
           ))}
         </ol>,
       );
       continue;
     }
 
-    rendered.push(<NotionBlock key={block.id} block={block} />);
+    rendered.push(
+      <NotionBlock key={block.id} block={block} firstImageBlockIds={firstImageBlockIds} />,
+    );
     i++;
   }
 

@@ -60,7 +60,7 @@ async function fetchBlockChildren(blockId: string): Promise<BlockObjectResponse[
  * 동시 API 호출 수를 CONCURRENCY로 제한하여 rate limit을 방지한다.
  */
 export async function getPageBlocks(pageId: string): Promise<BlockWithChildren[]> {
-  const CONCURRENCY = 3;
+  const CONCURRENCY = 6;
 
   const allBlocks: BlockWithChildren[] = [];
   const parentMap = new Map<string, string>();
@@ -105,6 +105,21 @@ export async function getPageBlocks(pageId: string): Promise<BlockWithChildren[]
   }
 
   return topLevel;
+}
+
+/** 블록 트리에서 문서 순서상 처음 N개 이미지 블록 ID 반환 (priority 지정에 사용) */
+export function getFirstImageBlockIds(
+  blocks: BlockWithChildren[],
+  limit = 2,
+): string[] {
+  const ids: string[] = [];
+  const queue: BlockWithChildren[] = [...blocks];
+  while (queue.length > 0 && ids.length < limit) {
+    const block = queue.shift()!;
+    if (block.type === "image") ids.push(block.id);
+    queue.push(...block.children);
+  }
+  return ids;
 }
 
 /** 단일 페이지 가져오기 */

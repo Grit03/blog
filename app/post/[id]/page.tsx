@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getPage, getPageBlocks, getPageTitle, type BlockWithChildren } from "@/lib/notion";
+import { getPage, getPageBlocks, getPageTitle, getFirstImageBlockIds, type BlockWithChildren } from "@/lib/notion";
 import { getPageTags } from "@/lib/notion";
 import { NotionBlocks } from "@/components/NotionBlock";
 import { Tag } from "@/components/PostCard/Tag";
@@ -82,7 +82,7 @@ export default async function PostPage({ params }: Props) {
             <time className="text-sm text-neutral-500">{createdAt}</time>
           </header>
           <section className="text-base leading-relaxed">
-            <NotionBlocks blocks={blocks} />
+            <NotionBlocks blocks={blocks} firstImageBlockIds={getFirstImageBlockIds(blocks)} />
           </section>
         </article>
         {contentTable.length > 0 && (
