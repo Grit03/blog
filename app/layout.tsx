@@ -1,15 +1,30 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
+import Link from "next/link";
+import { Geist, Sriracha } from "next/font/google";
+import { cn } from "@/lib/utils";
+import { MainNav } from "@/components/Header/MainNav";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
+
+const sriracha = Sriracha({
+  weight: '400',
+  subsets: ['latin'],
+  variable: '--font-sriracha',
+  display: 'swap',
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const pretendard = localFont({
+  src: "../public/font/PretendardVariable.woff2",
+  variable: "--font-pretendard",
+  display: "fallback",
+});
+
+const tossface = localFont({
+  src: "../public/font/TossFaceFontMac.ttf",
+  variable: "--font-tossface",
+  display: "fallback",
 });
 
 export const metadata: Metadata = {
@@ -23,12 +38,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
-    </html>
+    <html lang="en" className={cn("font-sans", geist.variable)}>
+      <body className={cn(pretendard.variable, tossface.variable, "antialiased")}>
+        <header className="w-full border-b px-10">
+          <div className="w-full lg:max-w-6xl mx-auto py-3.5 flex items-center justify-between">
+            <Link href="/" className="text-[1.4rem] font-bold text-foreground hover:text-primary transition-colors flex items-center gap-1.5">
+              <span>🍀</span>
+              <span className={sriracha.className}>Gyuri&apos;s Devlog</span>
+            </Link>
+            <MainNav />
+          </div>
+        </header>
+        <main className="flex-1 py-6">
+          {children}
+        </main>
+      </body >
+    </html >
   );
 }
