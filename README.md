@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+### ✨ Blog
 
-## Getting Started
+> Notion을 CMS로 쓰는 **Next.js** 블로그입니다.
 
-First, run the development server:
+### 🛠 Tech Stack
+
+| 구분 | 기술 |
+|------|------|
+| **Framework** | Next.js 16, React 19 |
+| **CMS** | Notion API (`@notionhq/client`) |
+| **UI** | shadcn/ui, Radix UI, Tailwind CSS 4 |
+| **코드 하이라이트** | Shiki |
+| **기타** | Lucide Icons, CVA, clsx, tw-merge |
+
+
+### 📁 주요 기능
+
+- **Notion DB 연동** — Notion 데이터베이스에서 글 목록·본문을 가져와 렌더링
+- **카테고리 필터** — 프로젝트 / 딥다이브 / 학습정리 / 회고로 글 분류·필터
+- **포스트 상세** — 목차(Table of Contents), 북마크 블록, 이미지 등 Notion 블록 렌더링
+- **코드 하이라이트** — Shiki 기반 코드 블록 스타일링
+
+
+## 🚀 시작하기
+
+### 1. 의존성 설치
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. 환경 변수 설정
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+`.env.local`에 다음 변수를 설정하세요.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| 변수 | 설명 |
+|------|------|
+| `NOTION_API_KEY` | [Notion 연동](https://www.notion.so/my-integrations)에서 발급한 API 키 |
+| `NOTION_DATABASE_ID` | 글 목록으로 쓰는 Notion DB의 ID |
 
-## Learn More
+### 3. 개발 서버 실행
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+pnpm dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+브라우저에서 [http://localhost:3000](http://localhost:3000) 으로 접속합니다.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 📜 스크립트
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| 명령어 | 설명 |
+|--------|------|
+| `pnpm dev` | 개발 서버 실행 |
+| `pnpm build` | 프로덕션 빌드 |
+| `pnpm start` | 프로덕션 서버 실행 |
+| `pnpm lint` | ESLint 실행 |
+| `pnpm format` | Prettier로 포맷팅 |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 📂 프로젝트 구조
+
+```
+blog/
+├── app/
+│   ├── page.tsx          # 메인 (글 목록 + 카테고리)
+│   ├── post/[id]/        # 포스트 상세
+│   └── globals.css
+├── components/
+│   ├── PostCard/         # 카드, 요약, 썸네일
+│   ├── NotionBlock.tsx   # Notion 블록 렌더링
+│   ├── BookmarkBlock.tsx
+│   ├── PostTableOfContents.tsx
+│   └── ...
+├── lib/
+│   └── notion.ts         # Notion API 래퍼
+└── ...
+```
+
+---
+
+*Notion에서 작성하고, 여기서 읽는 블로그.*
