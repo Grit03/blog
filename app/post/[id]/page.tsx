@@ -11,6 +11,9 @@ type Props = {
   params: Promise<{ id: string }>;
 };
 
+/** ISR: 1시간 캐시. webhook으로 revalidatePath 호출 시 즉시 갱신 */
+export const revalidate = 3600;
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
     const { id } = await params;

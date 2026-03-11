@@ -9,6 +9,9 @@ import { Categories, MiniCategories } from "@/components/Categories";
 
 const CATEGORY_VALUES = ["프로젝트", "딥다이브", "학습정리", "회고"] as const;
 
+/** ISR: 1시간 캐시. webhook으로 revalidatePath 호출 시 즉시 갱신 */
+export const revalidate = 3600;
+
 function postMatchesCategory(
   page: Awaited<ReturnType<typeof getPosts>>[number],
   category: string
