@@ -1,4 +1,4 @@
-import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
 import { getPage, getPageStatus } from "@/lib/notion";
 
 type WebhookPayload = {
@@ -40,8 +40,8 @@ export async function POST(
 
   // 페이지 삭제 이벤트 — 홈 + 해당 포스트 경로 revalidate
   if (eventType === "page.deleted" || eventType === "page.trashed") {
-    revalidatePath("/");
-    revalidatePath(`/post/${pageId}`);
+    revalidateTag("posts", "max");
+    revalidateTag(`post-${pageId}`, "max");
 
     return Response.json({
       revalidated: true,
@@ -66,8 +66,8 @@ export async function POST(
       status = getPageStatus(page);
     } catch {
       // 페이지가 이미 삭제되었거나 접근 불가 → 삭제 케이스로 처리
-      revalidatePath("/");
-      revalidatePath(`/post/${pageId}`);
+      revalidateTag("posts", "max");
+      revalidateTag(`post-${pageId}`, "max");
 
       return Response.json({
         revalidated: true,
@@ -77,8 +77,8 @@ export async function POST(
       });
     }
 
-    revalidatePath("/");
-    revalidatePath(`/post/${pageId}`);
+    revalidateTag("posts", "max");
+    revalidateTag(`post-${pageId}`, "max");
 
     return Response.json({
       revalidated: true,
