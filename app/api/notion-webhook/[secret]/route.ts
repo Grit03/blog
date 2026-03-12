@@ -33,6 +33,7 @@ export async function POST(
 
   const eventType = body.type;
   const pageId = body.entity?.id;
+  console.log("[webhook] received:", eventType, pageId);
 
   if (!pageId) {
     return Response.json({ error: "Missing entity id" }, { status: 400 });
@@ -66,8 +67,8 @@ export async function POST(
       status = getPageStatus(page);
     } catch {
       // 페이지가 이미 삭제되었거나 접근 불가 → 삭제 케이스로 처리
-      revalidateTag("posts", "max");
-      revalidateTag(`post-${pageId}`, "max");
+      revalidateTag("posts", { expire: 0 });
+      revalidateTag(`post-${pageId}`, { expire: 0 });
 
       return Response.json({
         revalidated: true,
@@ -77,8 +78,9 @@ export async function POST(
       });
     }
 
-    revalidateTag("posts", "max");
-    revalidateTag(`post-${pageId}`, "max");
+    revalidateTag("posts", { expire: 0 });
+    revalidateTag(`post-${pageId}`, { expire: 0 });
+    console.log("[webhook] revalidated tags:", "posts", `post-${pageId}`);
 
     return Response.json({
       revalidated: true,
