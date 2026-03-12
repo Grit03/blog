@@ -1,11 +1,31 @@
-import { revalidateTag } from "next/cache";
-import { getPage, getPageStatus } from "@/lib/notion";
+import { revalidatePath } from "next/cache";
+import { getPage, getPageStatus, getPageCategory } from "@/lib/notion";
+import { CATEGORIES, getSlugByCategoryValue } from "@/lib/categories";
 
 type WebhookPayload = {
   type?: string;
   verification_token?: string;
   entity?: { id: string; type?: string };
 };
+
+function revalidateAllCategories(pageId?: string) {
+  revalidatePath("/");
+  for (const { slug } of CATEGORIES) {
+    revalidatePath(`/category/${slug}`);
+  }
+  if (pageId) {
+    revalidatePath(`/post/${pageId}`);
+  }
+}
+
+function revalidateForCategory(pageId: string, categoryValue: string | null) {
+  revalidatePath("/");
+  revalidatePath(`/post/${pageId}`);
+  if (categoryValue) {
+    const slug = getSlugByCategoryValue(categoryValue);
+    if (slug) revalidatePath(`/category/${slug}`);
+  }
+}
 
 export async function POST(
   req: Request,
@@ -24,10 +44,7 @@ export async function POST(
     return Response.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  // Notion webhook 최초 등록 시 verification_token 확인 요청 처리
-  // 서버 로그에서 토큰을 확인한 뒤 Notion UI에 붙여넣으면 활성화 완료
   if (body.verification_token) {
-    // console.log("[Notion Webhook] verification_token:", body.verification_token);
     return Response.json({ ok: true });
   }
 
@@ -39,11 +56,8 @@ export async function POST(
     return Response.json({ error: "Missing entity id" }, { status: 400 });
   }
 
-  // 페이지 삭제 이벤트 — 홈 + 해당 포스트 경로 revalidate
   if (eventType === "page.deleted" || eventType === "page.trashed") {
-    revalidateTag("posts", "max");
-    revalidateTag(`post-${pageId}`, "max");
-
+    revalidateAllCategories(pageId);
     return Response.json({
       revalidated: true,
       event: eventType,
@@ -52,8 +66,6 @@ export async function POST(
     });
   }
 
-  // 페이지 업데이트/생성/복원 — Notion API로 상태 조회 후 판단
-  // page.updated는 속성(status, title 등) 변경도 포함
   if (
     eventType === "page.properties_updated" ||
     eventType === "page.created" ||
@@ -61,15 +73,14 @@ export async function POST(
     eventType === "page.undeleted"
   ) {
     let status: string | null = null;
+    let category: string | null = null;
 
     try {
       const page = await getPage(pageId);
       status = getPageStatus(page);
+      category = getPageCategory(page);
     } catch {
-      // 페이지가 이미 삭제되었거나 접근 불가 → 삭제 케이스로 처리
-      revalidateTag("posts", "max");
-      revalidateTag(`post-${pageId}`, "max");
-
+      revalidateAllCategories(pageId);
       return Response.json({
         revalidated: true,
         event: eventType,
@@ -78,15 +89,15 @@ export async function POST(
       });
     }
 
-    revalidateTag("posts", { expire: 0 });
-    revalidateTag(`post-${pageId}`, { expire: 0 });
-    console.log("[webhook] revalidated tags:", "posts", `post-${pageId}`);
+    revalidateForCategory(pageId, category);
+    console.log("[webhook] revalidated:", pageId, "category:", category);
 
     return Response.json({
       revalidated: true,
       event: eventType,
       pageId,
       status,
+      category,
     });
   }
 
