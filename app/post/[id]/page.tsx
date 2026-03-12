@@ -1,12 +1,13 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getPosts, getPageTitle, getFirstImageBlockIds, getCachedPage, getCachedPageBlocks, type BlockWithChildren } from "@/lib/notion";
+import { getPosts, getPage, getPageBlocks, getPageTitle, getFirstImageBlockIds, type BlockWithChildren } from "@/lib/notion";
 import { getPageTags } from "@/lib/notion";
 import { NotionBlocks } from "@/components/NotionBlock";
 import { Tag } from "@/components/PostCard/Tag";
 import { PostTableOfContents } from "@/components/PostTableOfContents";
 import { cn } from "@/lib/utils";
 
+export const revalidate = false;
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -17,11 +18,10 @@ export async function generateStaticParams() {
   return posts.map((page) => ({ id: page.id }));
 }
 
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
     const { id } = await params;
-    const page = await getCachedPage(id);
+    const page = await getPage(id);
     const title = getPageTitle(page);
     return { title: title || "글 상세" };
   } catch {
@@ -34,7 +34,7 @@ export default async function PostPage({ params }: Props) {
 
   const [page, blocks] = await (async () => {
     try {
-      return await Promise.all([getCachedPage(id), getCachedPageBlocks(id)]);
+      return await Promise.all([getPage(id), getPageBlocks(id)]);
     } catch {
       notFound();
       throw new Error("unreachable");

@@ -1,5 +1,4 @@
 import { Client, type PageObjectResponse, type BlockObjectResponse } from "@notionhq/client";
-import { cacheTag, cacheLife } from "next/cache";
 
 const notion = new Client({
   auth: process.env.NOTION_API_KEY,
@@ -222,27 +221,6 @@ export function getPageStatus(page: PageObjectResponse): string | null {
   const p = props["status"] ?? props["Status"];
   if (!p || p.type !== "status" || !p.status) return null;
   return p.status.name;
-}
-
-export async function getCachedPosts(category?: string | null) {
-  "use cache";
-  cacheLife("max");
-  cacheTag("posts");
-  return getPosts(category);
-}
-
-export async function getCachedPage(pageId: string) {
-  "use cache";
-  cacheLife("max");
-  cacheTag(`post-${pageId}`);
-  return getPage(pageId);
-}
-
-export async function getCachedPageBlocks(pageId: string) {
-  "use cache";
-  cacheLife("max");
-  cacheTag(`post-${pageId}`);
-  return getPageBlocks(pageId);
 }
 
 export { notion };

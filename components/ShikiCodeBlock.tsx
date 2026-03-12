@@ -1,5 +1,4 @@
 import { codeToHtml } from "shiki";
-import { cacheLife } from "next/cache";
 
 type ShikiCodeBlockProps = {
   code: string;
@@ -50,8 +49,6 @@ function toShikiLang(notionLang: string): string {
 }
 
 export async function ShikiCodeBlock({ code, language }: ShikiCodeBlockProps) {
-  "use cache";
-  cacheLife("max");
   const lang = toShikiLang(language);
   const html = await codeToHtml(code, {
     lang,
