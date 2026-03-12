@@ -1,4 +1,5 @@
 import { Client, type PageObjectResponse, type BlockObjectResponse } from "@notionhq/client";
+import { cacheTag, cacheLife } from "next/cache";
 
 const notion = new Client({
   auth: process.env.NOTION_API_KEY,
@@ -15,14 +16,23 @@ export type BlockWithChildren = BlockObjectResponse & {
 };
 
 /** Notion DB에서 페이지(글) 목록 가져오기 — status가 Draft인 글은 제외 */
-export async function getPosts(): Promise<PageObjectResponse[]> {
+export async function getPosts(category?: string | null): Promise<PageObjectResponse[]> {
   if (!DATABASE_ID) return [];
+
+  const publishedFilter = { property: "status", status: { equals: "Published" as const } };
+
+  const filter = category
+    ? {
+      and: [
+        publishedFilter,
+        { property: "category", select: { equals: category } },
+      ],
+    }
+    : publishedFilter;
+
   const response = await notion.dataSources.query({
     data_source_id: DATABASE_ID,
-    filter: {
-      property: "status",
-      status: { equals: "Published" },
-    },
+    filter,
     sorts: [{ timestamp: "created_time", direction: "descending" }],
   });
   return response.results.filter(
@@ -212,6 +222,27 @@ export function getPageStatus(page: PageObjectResponse): string | null {
   const p = props["status"] ?? props["Status"];
   if (!p || p.type !== "status" || !p.status) return null;
   return p.status.name;
+}
+
+export async function getCachedPosts(category?: string | null) {
+  "use cache";
+  cacheLife("max");
+  cacheTag("posts");
+  return getPosts(category);
+}
+
+export async function getCachedPage(pageId: string) {
+  "use cache";
+  cacheLife("max");
+  cacheTag(`post-${pageId}`);
+  return getPage(pageId);
+}
+
+export async function getCachedPageBlocks(pageId: string) {
+  "use cache";
+  cacheLife("max");
+  cacheTag(`post-${pageId}`);
+  return getPageBlocks(pageId);
 }
 
 export { notion };

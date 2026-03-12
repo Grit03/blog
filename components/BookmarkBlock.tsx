@@ -43,7 +43,7 @@ function BookmarkBlockFallback({
 const fetchOgMeta = async (url: string) => {
   try {
     const res = await fetch(url, {
-      next: { revalidate: 86400 },
+      cache: "force-cache",
       signal: AbortSignal.timeout(8000),
     });
     if (!res.ok) return null;
