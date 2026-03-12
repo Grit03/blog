@@ -55,7 +55,7 @@ export async function POST(
   // 페이지 업데이트/생성/복원 — Notion API로 상태 조회 후 판단
   // page.updated는 속성(status, title 등) 변경도 포함
   if (
-    eventType === "page.updated" ||
+    eventType === "page.properties_updated" ||
     eventType === "page.created" ||
     eventType === "page.restored" ||
     eventType === "page.undeleted"
@@ -67,8 +67,8 @@ export async function POST(
       status = getPageStatus(page);
     } catch {
       // 페이지가 이미 삭제되었거나 접근 불가 → 삭제 케이스로 처리
-      revalidateTag("posts", { expire: 0 });
-      revalidateTag(`post-${pageId}`, { expire: 0 });
+      revalidateTag("posts", "max");
+      revalidateTag(`post-${pageId}`, "max");
 
       return Response.json({
         revalidated: true,
