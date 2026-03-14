@@ -68,7 +68,6 @@ function RichTextSpan({ richTexts }: { richTexts: RichTextItemResponse[] }) {
           }
         }
         else if (text.type === "text" && text.href) {
-          console.log(text);
           node = (
             <a
               href={text.href}
