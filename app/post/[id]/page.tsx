@@ -109,8 +109,8 @@ export default async function PostPage({ params }: Props) {
                 ))}
               </div>
             )}
-            <h1 className="text-[2.1rem] font-bold leading-tight mb-1">
-              {title || "(제목 없음)"}
+            <h1 className="text-[2.1rem] font-bold leading-tight mb-1 break-keep text-pretty">
+              {title || "제목이 없습니다"}
             </h1>
             <time className="text-sm text-neutral-500">{createdAt}</time>
           </header>
