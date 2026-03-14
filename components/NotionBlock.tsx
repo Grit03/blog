@@ -3,6 +3,9 @@ import type { BlockWithChildren } from "@/lib/notion";
 import { ShikiCodeBlock } from "./ShikiCodeBlock";
 import { Image } from "@/components/Image";
 import { BookmarkBlock } from "./BookmarkBlock";
+import { cn } from "@/lib/utils";
+import { ExternalLink } from "lucide-react";
+
 
 
 function RichTextSpan({ richTexts }: { richTexts: RichTextItemResponse[] }) {
@@ -11,47 +14,73 @@ function RichTextSpan({ richTexts }: { richTexts: RichTextItemResponse[] }) {
       {richTexts.map((text, i) => {
         let node: React.ReactNode = text.plain_text;
 
-        if (text.annotations.bold) node = <strong key={i}>{node}</strong>;
-        if (text.annotations.italic) node = <em>{node}</em>;
-        if (text.annotations.strikethrough) node = <s>{node}</s>;
-        if (text.annotations.underline) node = <u>{node}</u>;
-        if (text.annotations.code)
+        if (text.annotations.bold) node = <strong key={i} className="font-semibold">{node}</strong>;
+        else if (text.annotations.italic) node = <em>{node}</em>;
+        else if (text.annotations.strikethrough) node = <s>{node}</s>;
+        else if (text.annotations.underline) node = <u>{node}</u>;
+        else if (text.annotations.code)
           node = (
-            <code className="bg-[#e8e8e8] text-[#c7254e] px-1.5 py-0.5 rounded text-[0.9em]">
+            <code className={cn("bg-[#e8e8e8] text-[#c7254e] px-1 py-0.5 rounded text-[0.85em] mx-0.5", text.annotations.bold && "font-semibold")}>
               {node}
             </code>
           );
-        if (text.type === "mention" && text.href) {
+        else if (text.type === "mention" && text.href) {
           const { mention } = text;
-          const linkMention = mention.type === "link_mention" ? mention.link_mention : undefined;
-          const iconUrl = linkMention?.icon_url;
-          const title = linkMention?.title;
-          const linkProvider = linkMention?.link_provider;
-          const linkAuthor = linkMention?.link_author;
-
-
+          if (mention.type === "link_mention") {
+            const linkMention = mention.link_mention;
+            const iconUrl = linkMention?.icon_url;
+            const title = linkMention?.title;
+            const linkProvider = linkMention?.link_provider;
+            const linkAuthor = linkMention?.link_author;
+            node = (
+              <a
+                href={text.href}
+                className="flex items-center gap-1 text-sm font-medium underline px-2 py-1 rounded-md hover:bg-background-highlight transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {iconUrl && (
+                  <Image
+                    src={iconUrl}
+                    alt=""
+                    width={20}
+                    height={20}
+                    className="w-5 h-5 shrink-0"
+                    unoptimized
+                  />
+                )}
+                {linkAuthor ? <span className="text-sm text-[#737373]">{linkAuthor}</span> : linkProvider ? <span className="text-sm text-[#737373]">{linkProvider}</span> : null}
+                {title}
+              </a>
+            );
+          } else if (mention.type === "page") {
+            node = (
+              <a
+                href={mention.page.id}
+                className="text-[#737373] underline hover:text-primary transition-colors "
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                📚 {text.plain_text}
+                <ExternalLink className="size-4 inline mb-1 ml-0.5" />
+              </a>
+            );
+          }
+        }
+        else if (text.type === "text" && text.href) {
+          console.log(text);
           node = (
             <a
               href={text.href}
-              className="flex items-center gap-1 text-sm font-medium underline px-2 py-1 rounded-md hover:bg-background-highlight transition-colors"
+              className="text-[#737373] underline hover:text-primary transition-colors "
               target="_blank"
               rel="noopener noreferrer"
             >
-              {iconUrl && (
-                <Image
-                  src={iconUrl}
-                  alt=""
-                  width={20}
-                  height={20}
-                  className="w-5 h-5 shrink-0"
-                />
-              )}
-              {linkAuthor ? <span className="text-sm text-[#737373]">{linkAuthor}</span> : linkProvider ? <span className="text-sm text-[#737373]">{linkProvider}</span> : null}
-              {title}
+              {text.plain_text}
+              <ExternalLink className="size-4 inline mb-1 ml-0.5" />
             </a>
           );
         }
-
         return <span key={i}>{node}</span>;
       })}
     </>
@@ -94,7 +123,7 @@ export function NotionBlock({
         );
       }
       return (
-        <div className="mb-4">
+        <div className="mb-3">
           <p className="leading-relaxed">
             <RichTextSpan richTexts={content.rich_text} />
           </p>
@@ -110,7 +139,7 @@ export function NotionBlock({
     case "heading_1":
       return (
         <>
-          <h1 id={block.id} className="text-[1.75rem] font-bold my-3 scroll-mt-24">
+          <h1 id={block.id} className="text-[1.75rem] font-bold mb-1 mt-8 scroll-mt-24">
             <RichTextSpan richTexts={content.rich_text} />
           </h1>
           {block.has_children && (
@@ -124,7 +153,7 @@ export function NotionBlock({
     case "heading_2":
       return (
         <>
-          <h2 id={block.id} className="text-[1.45rem] font-bold my-2 scroll-mt-24">
+          <h2 id={block.id} className="text-[1.45rem] font-bold mb-0.5 mt-7 scroll-mt-24">
             <RichTextSpan richTexts={content.rich_text} />
           </h2>
           {block.has_children && (
@@ -138,7 +167,7 @@ export function NotionBlock({
     case "heading_3":
       return (
         <>
-          <h3 id={block.id} className="text-[1.2rem] font-bold my-1.5 scroll-mt-24">
+          <h3 id={block.id} className="text-[1.2rem] font-bold mb-0.5 mt-7 scroll-mt-24">
             <RichTextSpan richTexts={content.rich_text} />
           </h3>
           {block.has_children && (
@@ -208,11 +237,23 @@ export function NotionBlock({
       );
 
     case "code": {
-      const codeText = content.rich_text
-        .map((t: { plain_text: string }) => t.plain_text)
-        .join("");
+      const codeParts: string[] = [];
+      const segments: { start: number; end: number; bold?: boolean }[] = [];
+      let pos = 0;
+      for (const t of content.rich_text) {
+        const text = "plain_text" in t ? t.plain_text : "";
+        const annotations = "annotations" in t ? t.annotations : undefined;
+        if (text.length > 0 && annotations?.bold) {
+          segments.push({ start: pos, end: pos + text.length, bold: true });
+        }
+        codeParts.push(text);
+        pos += text.length;
+      }
+      const codeText = codeParts.join("");
       const language = (content.language as string) ?? "plaintext";
-      return <ShikiCodeBlock code={codeText} language={language} />;
+      return (
+        <ShikiCodeBlock code={codeText} language={language} boldSegments={segments} />
+      );
     }
 
     case "quote":
@@ -229,7 +270,7 @@ export function NotionBlock({
 
     case "callout":
       return (
-        <div className="bg-background-highlight p-4 rounded-xl my-2 flex gap-3">
+        <div className="bg-background-highlight p-4 rounded-xl my-2 flex gap-3 whitespace-pre-wrap">
           {content.icon?.emoji && (
             <span className="text-xl">{content.icon.emoji}</span>
           )}
