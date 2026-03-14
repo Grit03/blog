@@ -1,8 +1,12 @@
 import { codeToHtml } from "shiki";
+import { CodeBlockWithAnnotations } from "./CodeBlockWithAnnotations";
+
+export type BoldSegment = { start: number; end: number; bold?: boolean };
 
 type ShikiCodeBlockProps = {
   code: string;
   language: string;
+  boldSegments?: BoldSegment[];
 };
 
 const NOTION_LANG_TO_SHIKI: Record<string, string> = {
@@ -48,16 +52,33 @@ function toShikiLang(notionLang: string): string {
   return NOTION_LANG_TO_SHIKI[normalized] ?? (normalized || "plaintext");
 }
 
-export async function ShikiCodeBlock({ code, language }: ShikiCodeBlockProps) {
+const codeBlockClassName =
+  "mb-4 overflow-x-auto rounded-lg text-sm leading-relaxed [&_pre]:!m-0 [&_pre]:!p-4 [&_pre]:!bg-background-highlight";
+
+export async function ShikiCodeBlock({
+  code,
+  language,
+  boldSegments = [],
+}: ShikiCodeBlockProps) {
   const lang = toShikiLang(language);
   const html = await codeToHtml(code, {
     lang,
     theme: "one-light",
   });
 
+  if (boldSegments.length > 0) {
+    return (
+      <CodeBlockWithAnnotations
+        html={html}
+        boldSegments={boldSegments}
+        className={codeBlockClassName}
+      />
+    );
+  }
+
   return (
     <div
-      className="mb-4 overflow-x-auto rounded-lg text-sm leading-relaxed [&_pre]:!m-0 [&_pre]:!p-4 [&_pre]:!bg-background-highlight"
+      className={codeBlockClassName}
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );
