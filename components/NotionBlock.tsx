@@ -311,12 +311,12 @@ export function NotionBlock({
             <table className="w-full border-collapse text-sm">
               {rows.length > 0 && hasHeader && (
                 <thead>
-                  <tr>
+                  <tr className="bg-background-highlight">
                     {getBlockContent(rows[0]).cells?.map(
                       (cell: RichTextItemResponse[], ci: number) => (
                         <th
                           key={ci}
-                          className="border-b border-r last:border-r-0 px-3 py-2 bg-[#f5f5f5] text-left font-semibold"
+                          className="border-b border-r last:border-r-0 px-3 py-2 bg-background-highlight text-left font-semibold text-foreground"
                         >
                           <RichTextSpan richTexts={cell} />
                         </th>
