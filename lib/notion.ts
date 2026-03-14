@@ -31,7 +31,7 @@ export async function getPosts(category?: string | null): Promise<PageObjectResp
 
   const response = await notion.dataSources.query({
     data_source_id: DATABASE_ID,
-    filter,
+    filter: process.env.NODE_ENV === "development" ? undefined : filter,
     sorts: [{ timestamp: "created_time", direction: "descending" }],
   });
   return response.results.filter(
@@ -131,10 +131,14 @@ export function getFirstImageBlockIds(
   return ids;
 }
 
-/** 단일 페이지 가져오기 */
+/** 단일 페이지 가져오기 — Published 상태가 아니면 에러를 던진다 */
 export async function getPage(pageId: string): Promise<PageObjectResponse> {
   const response = await notion.pages.retrieve({ page_id: pageId });
-  return response as PageObjectResponse;
+  const page = response as PageObjectResponse;
+  // if (getPageStatus(page) !== "Published") {
+  //   throw new Error("Page is not published");
+  // }
+  return page;
 }
 
 /** 페이지 속성에서 제목 추출 */
