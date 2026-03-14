@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getPosts, getPage, getPageBlocks, getPageTitle, getFirstImageBlockIds, type BlockWithChildren } from "@/lib/notion";
+import { getPosts, getPage, getPageBlocks, getPageTitle, getPageCover, getPageExcerpt, getFirstImageBlockIds, type BlockWithChildren } from "@/lib/notion";
 import { getPageTags } from "@/lib/notion";
 import { NotionBlocks } from "@/components/NotionBlock";
 import { Tag } from "@/components/PostCard/Tag";
@@ -22,8 +22,32 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
     const { id } = await params;
     const page = await getPage(id);
-    const title = getPageTitle(page);
-    return { title: title || "글 상세" };
+    const title = getPageTitle(page) || "글 상세";
+    const description = getPageExcerpt(page, 160);
+    const coverUrl = getPageCover(page);
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://grit03.vercel.app";
+    const postUrl = `${siteUrl}/post/${id}`;
+    const defaultOgImage = `${siteUrl}/image/blog-og-image.png`;
+    const ogImageUrl = coverUrl ?? defaultOgImage;
+
+    return {
+      title,
+      description: description || undefined,
+      openGraph: {
+        title,
+        description: description || undefined,
+        url: postUrl,
+        type: "article",
+        images: [{ url: ogImageUrl, width: 1200, height: 630, alt: title }],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description: description || undefined,
+        images: [ogImageUrl],
+      },
+      alternates: { canonical: postUrl },
+    };
   } catch {
     return { title: "글 상세" };
   }
@@ -88,7 +112,7 @@ export default async function PostPage({ params }: Props) {
             </h1>
             <time className="text-sm text-neutral-500">{createdAt}</time>
           </header>
-          <section className="text-base leading-relaxed">
+          <section className="text-base leading-relaxed break-keep">
             <NotionBlocks blocks={blocks} firstImageBlockIds={getFirstImageBlockIds(blocks)} />
           </section>
         </article>

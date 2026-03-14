@@ -47,12 +47,14 @@ export const metadata: Metadata = {
     title: "김규리 | Moving Forward",
     description:
       "프로젝트, 딥다이브, 학습정리, 회고를 담는 개발 블로그. 프론트엔드와 웹 개발 경험을 기록합니다.",
+    images: [{ url: "/image/blog-og-image.png", width: 1200, height: 630, alt: "Gyuri's DevLog" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "김규리 | Moving Forward",
     description:
       "프로젝트, 딥다이브, 학습정리, 회고를 담는 개발 블로그. 프론트엔드와 웹 개발 경험을 기록합니다.",
+    images: ["/image/blog-og-image.png"],
   },
   robots: {
     index: true,
