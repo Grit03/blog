@@ -28,7 +28,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://grit03.vercel.app";
     const postUrl = `${siteUrl}/post/${id}`;
     const defaultOgImage = `${siteUrl}/image/blog-og-image.png`;
-    const ogImageUrl = coverUrl ?? defaultOgImage;
+    // Notion/S3 URL은 크롤러가 가져오지 못할 수 있어, 같은 도메인 기본 이미지 사용
+    const ogImageUrl =
+      coverUrl && coverUrl.startsWith(siteUrl) ? coverUrl : defaultOgImage;
 
     return {
       title,
