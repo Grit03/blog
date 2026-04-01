@@ -18,6 +18,7 @@ async function LinkPreview({
 
   if (
     metaInfo &&
+    metaInfo.title &&
     url.startsWith("https://github.com/") &&
     url.includes("pull")
   ) {
