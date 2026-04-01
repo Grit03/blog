@@ -73,6 +73,8 @@ function RichTextSpan({
   richTexts: RichTextItemResponse[];
   id: string;
 }) {
+  if (richTexts.length === 0) return <div className="h-5"></div>;
+
   return (
     <>
       {richTexts.map((text, i) => {
@@ -109,7 +111,7 @@ function RichTextSpan({
             node = (
               <a
                 href={text.href}
-                className="hover:bg-background-highlight flex items-center gap-1 rounded-md px-2 py-1 text-[0.9rem] font-medium text-[#737373] underline transition-colors"
+                className="bg-background-highlight my-1.5 flex items-center gap-2 rounded-md px-2.5 py-2 text-[0.9rem] font-medium text-[#737373] underline transition-colors hover:bg-zinc-200"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -233,7 +235,7 @@ export function NotionBlock({
         <>
           <h1
             id={block.id}
-            className="mt-8 mb-1 scroll-mt-24 text-2xl font-bold sm:text-[1.75rem]"
+            className="mt-8 mb-4 scroll-mt-24 text-2xl font-bold sm:text-[1.75rem]"
           >
             <RichTextSpan richTexts={content.rich_text} id={block.id} />
           </h1>
@@ -253,7 +255,7 @@ export function NotionBlock({
         <>
           <h2
             id={block.id}
-            className="mt-7 mb-0.5 scroll-mt-24 text-xl font-bold sm:text-[1.45rem]"
+            className="mt-7 mb-4 scroll-mt-24 text-xl font-bold sm:text-[1.45rem]"
           >
             <RichTextSpan richTexts={content.rich_text} id={block.id} />
           </h2>
@@ -273,7 +275,7 @@ export function NotionBlock({
         <>
           <h3
             id={block.id}
-            className="mt-7 mb-0.5 scroll-mt-24 text-lg font-bold sm:text-[1.2rem]"
+            className="mt-7 mb-4 scroll-mt-24 text-lg font-bold sm:text-[1.2rem]"
           >
             <RichTextSpan richTexts={content.rich_text} id={block.id} />
           </h3>
