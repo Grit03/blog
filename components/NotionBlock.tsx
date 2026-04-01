@@ -233,7 +233,7 @@ export function NotionBlock({
         <>
           <h1
             id={block.id}
-            className="mt-8 mb-1 scroll-mt-24 text-[1.75rem] font-bold"
+            className="mt-8 mb-1 scroll-mt-24 text-2xl font-bold sm:text-[1.75rem]"
           >
             <RichTextSpan richTexts={content.rich_text} id={block.id} />
           </h1>
@@ -253,7 +253,7 @@ export function NotionBlock({
         <>
           <h2
             id={block.id}
-            className="mt-7 mb-0.5 scroll-mt-24 text-[1.45rem] font-bold"
+            className="mt-7 mb-0.5 scroll-mt-24 text-xl font-bold sm:text-[1.45rem]"
           >
             <RichTextSpan richTexts={content.rich_text} id={block.id} />
           </h2>
@@ -273,7 +273,7 @@ export function NotionBlock({
         <>
           <h3
             id={block.id}
-            className="mt-7 mb-0.5 scroll-mt-24 text-[1.2rem] font-bold"
+            className="mt-7 mb-0.5 scroll-mt-24 text-lg font-bold sm:text-[1.2rem]"
           >
             <RichTextSpan richTexts={content.rich_text} id={block.id} />
           </h3>

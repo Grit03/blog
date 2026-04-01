@@ -117,7 +117,7 @@ export default async function PostPage({ params }: Props) {
     <div className="w-full">
       <div
         className={cn(
-          "relative mx-auto w-full px-10 py-10 md:max-w-4xl xl:px-0",
+          "relative mx-auto w-full px-4.5 sm:px-10 sm:py-10 md:max-w-4xl xl:px-0",
           contentTable.length > 0 && "md:max-w-5xl xl:pr-60"
         )}
       >
@@ -130,7 +130,7 @@ export default async function PostPage({ params }: Props) {
                 ))}
               </div>
             )}
-            <h1 className="mb-1 text-[2.1rem] leading-tight font-bold text-pretty break-keep">
+            <h1 className="mb-1 text-3xl leading-tight font-bold text-pretty break-keep sm:text-[2.1rem]">
               {title || "제목이 없습니다"}
             </h1>
             <time className="text-sm text-neutral-500">{createdAt}</time>
