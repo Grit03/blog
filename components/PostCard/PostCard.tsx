@@ -25,19 +25,18 @@ export function PostCard({
   date,
   priorityImage = false,
 }: PostCardProps) {
-
   return (
     <Link
       href={href}
-      className="flex flex-col md:flex-row gap-3 md:gap-5.5 rounded-xl text-left transition p-3 min-h-[180px] group"
+      className="group flex min-h-[180px] flex-col gap-3 rounded-xl p-3 text-left transition md:flex-row md:gap-5.5"
     >
       <FeaturedImage src={coverUrl} alt={title} priority={priorityImage} />
-      <div className="flex flex-1 flex-col py-1 group-hover:text-primary transition-colors">
-        <div className="flex flex-col gap-1.5 flex-1">
+      <div className="group-hover:text-primary flex flex-1 flex-col py-1 transition-colors">
+        <div className="flex flex-1 flex-col gap-1.5">
           <TagList tags={tags} />
           <PostTitle>{title}</PostTitle>
           {excerpt && (
-            <PostExcerpt className="flex-1">{excerpt}</PostExcerpt>
+            <PostExcerpt className="flex-1 break-keep">{excerpt}</PostExcerpt>
           )}
         </div>
         <div className="mt-3 flex justify-start">
