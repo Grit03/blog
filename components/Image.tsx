@@ -36,7 +36,7 @@ export function Image({
         {...rest}
       />
       <div
-        className="pointer-events-none absolute max-w-[800px] mx-auto inset-0 bg-neutral-100/10 backdrop-blur-md transition-opacity duration-500 rounded-xl"
+        className="pointer-events-none absolute inset-0 mx-auto max-w-[800px] rounded-xl bg-neutral-100/10 backdrop-blur-md transition-opacity duration-500"
         style={{ opacity: loaded ? 0 : 1 }}
         aria-hidden
       />
