@@ -18,8 +18,13 @@ function GithubIcon({ className }: { className?: string }) {
 
 export function MainNav() {
   return (
-    <nav className="flex items-center gap-3 text-[#525252] font-medium text-sm">
-      <Button variant="ghost" size="lg" asChild className="font-semibold">
+    <nav className="flex items-center gap-3 text-sm font-medium text-[#525252]">
+      <Button
+        variant="ghost"
+        size="lg"
+        asChild
+        className="hidden font-semibold sm:flex"
+      >
         <Link
           href="https://github.com/Grit03"
           target="_blank"
@@ -30,9 +35,16 @@ export function MainNav() {
           Github
         </Link>
       </Button>
-      <Button variant="default" size="lg" className="font-semibold" onClick={() => {
-        alert("구독하기 기능은 준비 중입니다.");
-      }}>구독하기</Button>
+      <Button
+        variant="default"
+        size="lg"
+        className="font-semibold"
+        onClick={() => {
+          alert("구독하기 기능은 준비 중입니다.");
+        }}
+      >
+        구독하기
+      </Button>
     </nav>
   );
 }

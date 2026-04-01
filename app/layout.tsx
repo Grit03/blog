@@ -6,13 +6,13 @@ import { Geist, Sriracha } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { MainNav } from "@/components/Header/MainNav";
 
-const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 const sriracha = Sriracha({
-  weight: '400',
-  subsets: ['latin'],
-  variable: '--font-sriracha',
-  display: 'swap',
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-sriracha",
+  display: "swap",
 });
 
 const pretendard = localFont({
@@ -37,7 +37,14 @@ export const metadata: Metadata = {
   },
   description:
     "프로젝트, 딥다이브, 학습정리, 회고를 담는 개발 블로그. 프론트엔드와 웹 개발 경험을 기록합니다.",
-  keywords: ["개발 블로그", "프론트엔드", "웹 개발", "학습 정리", "회고", "Gyuri"],
+  keywords: [
+    "개발 블로그",
+    "프론트엔드",
+    "웹 개발",
+    "학습 정리",
+    "회고",
+    "Gyuri",
+  ],
   authors: [{ name: "Gyuri", url: siteUrl }],
   openGraph: {
     type: "website",
@@ -47,7 +54,14 @@ export const metadata: Metadata = {
     title: "김규리 | Moving Forward",
     description:
       "프로젝트, 딥다이브, 학습정리, 회고를 담는 개발 블로그. 프론트엔드와 웹 개발 경험을 기록합니다.",
-    images: [{ url: `${siteUrl}/image/blog-og-image.png`, width: 1200, height: 630, alt: "Gyuri's DevLog" }],
+    images: [
+      {
+        url: `${siteUrl}/image/blog-og-image.png`,
+        width: 1200,
+        height: 630,
+        alt: "Gyuri's DevLog",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
@@ -72,22 +86,28 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://img.notionusercontent.com" />
         <link rel="dns-prefetch" href="https://www.notion.so" />
-        <link rel="dns-prefetch" href="https://prod-files-secure.s3.us-west-2.amazonaws.com" />
+        <link
+          rel="dns-prefetch"
+          href="https://prod-files-secure.s3.us-west-2.amazonaws.com"
+        />
       </head>
-      <body className={cn(pretendard.variable, tossface.variable, "antialiased")}>
-        <header className="w-full border-b px-10">
-          <div className="w-full lg:max-w-6xl mx-auto py-3.5 flex items-center justify-between">
-            <Link href="/" className="text-[1.4rem] font-bold text-foreground hover:text-primary transition-colors flex items-center gap-1.5">
+      <body
+        className={cn(pretendard.variable, tossface.variable, "antialiased")}
+      >
+        <header className="w-full border-b px-3 sm:px-10">
+          <div className="mx-auto flex w-full items-center justify-between py-3 lg:max-w-6xl">
+            <Link
+              href="/"
+              className="text-foreground hover:text-primary flex items-center gap-1.5 font-bold transition-colors sm:text-[1.4rem]"
+            >
               <span>🍀</span>
               <span className={sriracha.className}>Gyuri&apos;s Devlog</span>
             </Link>
             <MainNav />
           </div>
         </header>
-        <main className="flex-1 py-6">
-          {children}
-        </main>
-      </body >
-    </html >
+        <main className="flex-1 py-6">{children}</main>
+      </body>
+    </html>
   );
 }
