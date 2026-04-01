@@ -4,23 +4,96 @@ import { ShikiCodeBlock } from "./ShikiCodeBlock";
 import { Image } from "@/components/Image";
 import { BookmarkBlock } from "./BookmarkBlock";
 import { cn } from "@/lib/utils";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, GitPullRequestArrow } from "lucide-react";
+import { fetchOgMeta } from "@/lib/fetch";
 
+async function LinkPreview({
+  url,
+  fallbackText,
+}: {
+  url: string;
+  fallbackText: string;
+}) {
+  const metaInfo = await fetchOgMeta(url);
 
+  if (
+    metaInfo &&
+    url.startsWith("https://github.com/") &&
+    url.includes("pull")
+  ) {
+    const infoDetails = metaInfo.title.split(" · ");
+    const [title, author] = infoDetails[0].split(" by ");
+    return (
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="hover:bg-background-highlight flex cursor-pointer items-center gap-2.5 rounded-sm border-[1.4px] border-gray-300 px-4.5 py-3.5 text-sm"
+      >
+        <div className="relative size-8.5 overflow-hidden rounded-full">
+          <img
+            src={`https://github.com/${author}.png`}
+            alt="깃헙 사용자 프로필"
+          />
+        </div>
+        <div className="flex min-w-0 flex-col">
+          <div className="truncate font-semibold break-words">
+            {title}
+            <ExternalLink className="mb-1 ml-0.5 inline size-4 text-[#737373]" />
+          </div>
+          <div className="flex items-center gap-1.5">
+            <GitPullRequestArrow className="text-primary size-3.5 shrink-0" />
+            <div className="truncate text-xs text-[#737373]">
+              {`${infoDetails[1]} · ${author} · ${infoDetails[2]}`}
+            </div>
+          </div>
+        </div>
+      </a>
+    );
+  }
 
-function RichTextSpan({ richTexts }: { richTexts: RichTextItemResponse[] }) {
+  return (
+    <a
+      href={url}
+      className="hover:text-primary text-[#737373] underline transition-colors"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      {fallbackText}
+      <ExternalLink className="mb-1 ml-0.5 inline size-4" />
+    </a>
+  );
+}
+
+function RichTextSpan({
+  richTexts,
+  id,
+}: {
+  richTexts: RichTextItemResponse[];
+  id: string;
+}) {
   return (
     <>
       {richTexts.map((text, i) => {
         let node: React.ReactNode = text.plain_text;
 
-        if (text.annotations.bold) node = <strong key={i} className="font-semibold">{node}</strong>;
+        if (text.annotations.bold)
+          node = (
+            <strong key={id + i} className="font-semibold">
+              {node}
+            </strong>
+          );
         else if (text.annotations.italic) node = <em>{node}</em>;
         else if (text.annotations.strikethrough) node = <s>{node}</s>;
         else if (text.annotations.underline) node = <u>{node}</u>;
         else if (text.annotations.code)
           node = (
-            <code className={cn("bg-[#e8e8e8] text-[#c7254e] px-1 py-0.5 rounded text-[0.85em] mx-0.5", text.annotations.bold && "font-semibold")}>
+            <code
+              className={cn(
+                "mx-0.5 rounded bg-[#e8e8e8] px-1 py-0.5 text-[0.85em] text-[#c7254e]",
+                text.annotations.bold && "font-semibold"
+              )}
+            >
               {node}
             </code>
           );
@@ -35,7 +108,7 @@ function RichTextSpan({ richTexts }: { richTexts: RichTextItemResponse[] }) {
             node = (
               <a
                 href={text.href}
-                className="flex items-center gap-1 text-sm font-medium underline px-2 py-1 rounded-md hover:bg-background-highlight transition-colors"
+                className="hover:bg-background-highlight flex items-center gap-1 rounded-md px-2 py-1 text-[0.9rem] font-medium text-[#737373] underline transition-colors"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -45,42 +118,53 @@ function RichTextSpan({ richTexts }: { richTexts: RichTextItemResponse[] }) {
                     alt=""
                     width={20}
                     height={20}
-                    className="w-5 h-5 shrink-0"
+                    className="h-5 w-5 shrink-0"
                     unoptimized
                   />
                 )}
-                {linkAuthor ? <span className="text-sm text-[#737373]">{linkAuthor}</span> : linkProvider ? <span className="text-sm text-[#737373]">{linkProvider}</span> : null}
+                {linkAuthor ? (
+                  <span>{linkAuthor}</span>
+                ) : linkProvider ? (
+                  <span>{linkProvider}</span>
+                ) : null}
                 {title}
+                <ExternalLink className="mb-0.5 inline size-3.5" />
               </a>
+            );
+          } else if (mention.type === "link_preview") {
+            node = (
+              <LinkPreview
+                url={mention.link_preview.url}
+                fallbackText={text.plain_text}
+              />
             );
           } else if (mention.type === "page") {
             node = (
               <a
                 href={mention.page.id}
-                className="text-[#737373] underline hover:text-primary transition-colors "
+                className="hover:text-primary text-[#737373] underline transition-colors"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 📚 {text.plain_text}
-                <ExternalLink className="size-4 inline mb-1 ml-0.5" />
+                <ExternalLink className="mb-1 ml-0.5 inline size-4" />
               </a>
             );
           }
-        }
-        else if (text.type === "text" && text.href) {
+        } else if (text.type === "text" && text.href) {
           node = (
             <a
               href={text.href}
-              className="text-[#737373] underline hover:text-primary transition-colors "
+              className="hover:text-primary text-[#737373] underline transition-colors"
               target="_blank"
               rel="noopener noreferrer"
             >
               {text.plain_text}
-              <ExternalLink className="size-4 inline mb-1 ml-0.5" />
+              <ExternalLink className="mb-1 ml-0.5 inline size-4" />
             </a>
           );
         }
-        return <span key={i}>{node}</span>;
+        return <span key={id + i}>{node}</span>;
       })}
     </>
   );
@@ -100,7 +184,9 @@ function ChildBlocks({
   firstImageBlockIds?: string[] | null;
 }) {
   if (!blocks || blocks.length === 0) return null;
-  return <NotionBlocks blocks={blocks} firstImageBlockIds={firstImageBlockIds} />;
+  return (
+    <NotionBlocks blocks={blocks} firstImageBlockIds={firstImageBlockIds} />
+  );
 }
 
 export function NotionBlock({
@@ -114,21 +200,27 @@ export function NotionBlock({
 
   switch (block.type) {
     case "paragraph": {
-      if (content.rich_text.length === 1 && content.rich_text[0].type === "mention") {
+      if (
+        content.rich_text.length === 1 &&
+        content.rich_text[0].type === "mention"
+      ) {
         return (
-          <p className="mb-1 leading-relaxed">
-            <RichTextSpan richTexts={content.rich_text} />
-          </p>
+          <div className="mb-1 leading-relaxed">
+            <RichTextSpan richTexts={content.rich_text} id={block.id} />
+          </div>
         );
       }
       return (
         <div className="mb-3">
           <p className="leading-relaxed">
-            <RichTextSpan richTexts={content.rich_text} />
+            <RichTextSpan richTexts={content.rich_text} id={block.id} />
           </p>
           {block.children.length > 0 && (
             <div className="pl-4">
-              <ChildBlocks blocks={block.children} firstImageBlockIds={firstImageBlockIds} />
+              <ChildBlocks
+                blocks={block.children}
+                firstImageBlockIds={firstImageBlockIds}
+              />
             </div>
           )}
         </div>
@@ -138,12 +230,18 @@ export function NotionBlock({
     case "heading_1":
       return (
         <>
-          <h1 id={block.id} className="text-[1.75rem] font-bold mb-1 mt-8 scroll-mt-24">
-            <RichTextSpan richTexts={content.rich_text} />
+          <h1
+            id={block.id}
+            className="mt-8 mb-1 scroll-mt-24 text-[1.75rem] font-bold"
+          >
+            <RichTextSpan richTexts={content.rich_text} id={block.id} />
           </h1>
           {block.has_children && (
             <div className="pl-4">
-              <ChildBlocks blocks={block.children} firstImageBlockIds={firstImageBlockIds} />
+              <ChildBlocks
+                blocks={block.children}
+                firstImageBlockIds={firstImageBlockIds}
+              />
             </div>
           )}
         </>
@@ -152,12 +250,18 @@ export function NotionBlock({
     case "heading_2":
       return (
         <>
-          <h2 id={block.id} className="text-[1.45rem] font-bold mb-0.5 mt-7 scroll-mt-24">
-            <RichTextSpan richTexts={content.rich_text} />
+          <h2
+            id={block.id}
+            className="mt-7 mb-0.5 scroll-mt-24 text-[1.45rem] font-bold"
+          >
+            <RichTextSpan richTexts={content.rich_text} id={block.id} />
           </h2>
           {block.has_children && (
             <div className="pl-4">
-              <ChildBlocks blocks={block.children} firstImageBlockIds={firstImageBlockIds} />
+              <ChildBlocks
+                blocks={block.children}
+                firstImageBlockIds={firstImageBlockIds}
+              />
             </div>
           )}
         </>
@@ -166,12 +270,18 @@ export function NotionBlock({
     case "heading_3":
       return (
         <>
-          <h3 id={block.id} className="text-[1.2rem] font-bold mb-0.5 mt-7 scroll-mt-24">
-            <RichTextSpan richTexts={content.rich_text} />
+          <h3
+            id={block.id}
+            className="mt-7 mb-0.5 scroll-mt-24 text-[1.2rem] font-bold"
+          >
+            <RichTextSpan richTexts={content.rich_text} id={block.id} />
           </h3>
           {block.has_children && (
             <div className="pl-4">
-              <ChildBlocks blocks={block.children} firstImageBlockIds={firstImageBlockIds} />
+              <ChildBlocks
+                blocks={block.children}
+                firstImageBlockIds={firstImageBlockIds}
+              />
             </div>
           )}
         </>
@@ -179,11 +289,14 @@ export function NotionBlock({
 
     case "bulleted_list_item":
       return (
-        <li className="ml-6 list-disc mb-1 leading-relaxed">
-          <RichTextSpan richTexts={content.rich_text} />
+        <li className="mb-1 ml-6 list-disc leading-relaxed">
+          <RichTextSpan richTexts={content.rich_text} id={block.id} />
           {block.children.length > 0 && (
             <ul>
-              <ChildBlocks blocks={block.children} firstImageBlockIds={firstImageBlockIds} />
+              <ChildBlocks
+                blocks={block.children}
+                firstImageBlockIds={firstImageBlockIds}
+              />
             </ul>
           )}
         </li>
@@ -191,11 +304,14 @@ export function NotionBlock({
 
     case "numbered_list_item":
       return (
-        <li className="ml-6 list-decimal mb-1 leading-relaxed">
-          <RichTextSpan richTexts={content.rich_text} />
+        <li className="mb-1 ml-6 list-decimal leading-relaxed">
+          <RichTextSpan richTexts={content.rich_text} id={block.id} />
           {block.children.length > 0 && (
             <ol>
-              <ChildBlocks blocks={block.children} firstImageBlockIds={firstImageBlockIds} />
+              <ChildBlocks
+                blocks={block.children}
+                firstImageBlockIds={firstImageBlockIds}
+              />
             </ol>
           )}
         </li>
@@ -211,13 +327,16 @@ export function NotionBlock({
               readOnly
               className="mt-1.5"
             />
-            <span className={content.checked ? "line-through text-[#999]" : ""}>
-              <RichTextSpan richTexts={content.rich_text} />
+            <span className={content.checked ? "text-[#999] line-through" : ""}>
+              <RichTextSpan richTexts={content.rich_text} id={block.id} />
             </span>
           </div>
           {block.children.length > 0 && (
             <div className="pl-6">
-              <ChildBlocks blocks={block.children} firstImageBlockIds={firstImageBlockIds} />
+              <ChildBlocks
+                blocks={block.children}
+                firstImageBlockIds={firstImageBlockIds}
+              />
             </div>
           )}
         </div>
@@ -227,10 +346,13 @@ export function NotionBlock({
       return (
         <details className="mb-4">
           <summary className="cursor-pointer font-medium">
-            <RichTextSpan richTexts={content.rich_text} />
+            <RichTextSpan richTexts={content.rich_text} id={block.id} />
           </summary>
-          <div className="pl-4 pt-2">
-            <ChildBlocks blocks={block.children} firstImageBlockIds={firstImageBlockIds} />
+          <div className="pt-2 pl-4">
+            <ChildBlocks
+              blocks={block.children}
+              firstImageBlockIds={firstImageBlockIds}
+            />
           </div>
         </details>
       );
@@ -251,17 +373,24 @@ export function NotionBlock({
       const codeText = codeParts.join("");
       const language = (content.language as string) ?? "plaintext";
       return (
-        <ShikiCodeBlock code={codeText} language={language} boldSegments={segments} />
+        <ShikiCodeBlock
+          code={codeText}
+          language={language}
+          boldSegments={segments}
+        />
       );
     }
 
     case "quote":
       return (
-        <blockquote className="border-l-4 pl-4 italic mb-4 text-[#555] bg-[#f8f8f8] p-3">
-          <RichTextSpan richTexts={content.rich_text} />
+        <blockquote className="mb-4 border-l-4 bg-[#f8f8f8] p-3 pl-4 text-[#555] italic">
+          <RichTextSpan richTexts={content.rich_text} id={block.id} />
           {block.children.length > 0 && (
             <div className="mt-2 not-italic">
-              <ChildBlocks blocks={block.children} firstImageBlockIds={firstImageBlockIds} />
+              <ChildBlocks
+                blocks={block.children}
+                firstImageBlockIds={firstImageBlockIds}
+              />
             </div>
           )}
         </blockquote>
@@ -269,15 +398,18 @@ export function NotionBlock({
 
     case "callout":
       return (
-        <div className="bg-background-highlight p-4 rounded-xl my-2 flex gap-3 whitespace-pre-wrap">
+        <div className="bg-background-highlight my-2 flex gap-3 rounded-xl p-4 whitespace-pre-wrap">
           {content.icon?.emoji && (
             <span className="text-xl">{content.icon.emoji}</span>
           )}
           <div className="min-w-0 flex-1">
-            <RichTextSpan richTexts={content.rich_text} />
+            <RichTextSpan richTexts={content.rich_text} id={block.id} />
             {block.children.length > 0 && (
               <div className="mt-2">
-                <ChildBlocks blocks={block.children} firstImageBlockIds={firstImageBlockIds} />
+                <ChildBlocks
+                  blocks={block.children}
+                  firstImageBlockIds={firstImageBlockIds}
+                />
               </div>
             )}
           </div>
@@ -285,27 +417,40 @@ export function NotionBlock({
       );
 
     case "synced_block":
-      return <ChildBlocks blocks={block.children} firstImageBlockIds={firstImageBlockIds} />;
+      return (
+        <ChildBlocks
+          blocks={block.children}
+          firstImageBlockIds={firstImageBlockIds}
+        />
+      );
 
     case "column_list":
       return (
-        <div className="flex gap-4 mb-4">
+        <div className="mb-4 flex gap-4">
           {block.children.map((column) => (
-            <div key={column.id} className="flex-1 min-w-0">
-              <ChildBlocks blocks={column.children} firstImageBlockIds={firstImageBlockIds} />
+            <div key={column.id} className="min-w-0 flex-1">
+              <ChildBlocks
+                blocks={column.children}
+                firstImageBlockIds={firstImageBlockIds}
+              />
             </div>
           ))}
         </div>
       );
 
     case "column":
-      return <ChildBlocks blocks={block.children} firstImageBlockIds={firstImageBlockIds} />;
+      return (
+        <ChildBlocks
+          blocks={block.children}
+          firstImageBlockIds={firstImageBlockIds}
+        />
+      );
 
     case "table": {
       const hasHeader = content.has_column_header;
       const rows = block.children;
       return (
-        <div className="overflow-x-auto mb-4">
+        <div className="mb-4 overflow-x-auto">
           <div className="overflow-hidden rounded-xl border">
             <table className="w-full border-collapse text-sm">
               {rows.length > 0 && hasHeader && (
@@ -315,11 +460,11 @@ export function NotionBlock({
                       (cell: RichTextItemResponse[], ci: number) => (
                         <th
                           key={ci}
-                          className="border-b border-r last:border-r-0 px-3 py-2 bg-background-highlight text-left font-semibold text-foreground"
+                          className="bg-background-highlight text-foreground border-r border-b px-3 py-2 text-left font-semibold last:border-r-0"
                         >
-                          <RichTextSpan richTexts={cell} />
+                          <RichTextSpan richTexts={cell} id={block.id} />
                         </th>
-                      ),
+                      )
                     )}
                   </tr>
                 </thead>
@@ -329,10 +474,13 @@ export function NotionBlock({
                   <tr key={row.id} className="border-b last:border-b-0">
                     {getBlockContent(row).cells?.map(
                       (cell: RichTextItemResponse[], ci: number) => (
-                        <td key={ci} className="border-r last:border-r-0 px-3 py-2">
-                          <RichTextSpan richTexts={cell} />
+                        <td
+                          key={ci}
+                          className="border-r px-3 py-2 last:border-r-0"
+                        >
+                          <RichTextSpan richTexts={cell} id={block.id} />
                         </td>
-                      ),
+                      )
                     )}
                   </tr>
                 ))}
@@ -351,12 +499,9 @@ export function NotionBlock({
 
     case "image": {
       const src =
-        content.type === "external"
-          ? content.external.url
-          : content.file?.url;
+        content.type === "external" ? content.external.url : content.file?.url;
       const caption = content.caption?.[0]?.plain_text;
-      const isPriorityImage =
-        firstImageBlockIds?.includes(block.id) ?? false;
+      const isPriorityImage = firstImageBlockIds?.includes(block.id) ?? false;
       return (
         <figure className="mb-6">
           {src && (
@@ -373,7 +518,7 @@ export function NotionBlock({
             />
           )}
           {caption && (
-            <figcaption className="text-center text-sm text-[#888] mt-2">
+            <figcaption className="mt-2 text-center text-sm text-[#888]">
               {caption}
             </figcaption>
           )}
@@ -383,12 +528,7 @@ export function NotionBlock({
 
     case "bookmark": {
       const caption = content.caption?.[0]?.plain_text;
-      return (
-        <BookmarkBlock
-          url={content.url}
-          caption={caption}
-        />
-      );
+      return <BookmarkBlock url={content.url} caption={caption} />;
     }
 
     case "embed":
@@ -396,7 +536,7 @@ export function NotionBlock({
         <div className="mb-4">
           <iframe
             src={content.url}
-            className="w-full h-80 rounded-lg border border-[#ddd]"
+            className="h-80 w-full rounded-lg border border-[#ddd]"
             allowFullScreen
           />
         </div>
@@ -404,9 +544,7 @@ export function NotionBlock({
 
     case "video": {
       const videoUrl =
-        content.type === "external"
-          ? content.external.url
-          : content.file?.url;
+        content.type === "external" ? content.external.url : content.file?.url;
       if (videoUrl?.includes("youtube.com") || videoUrl?.includes("youtu.be")) {
         const videoId = videoUrl.includes("youtu.be")
           ? videoUrl.split("/").pop()
@@ -415,14 +553,14 @@ export function NotionBlock({
           <div className="mb-4 aspect-video">
             <iframe
               src={`https://www.youtube.com/embed/${videoId}`}
-              className="w-full h-full rounded-lg"
+              className="h-full w-full rounded-lg"
               allowFullScreen
             />
           </div>
         );
       }
       return (
-        <video src={videoUrl} controls className="w-full rounded-lg mb-4" />
+        <video src={videoUrl} controls className="mb-4 w-full rounded-lg" />
       );
     }
 
@@ -453,9 +591,13 @@ export function NotionBlocks({
       rendered.push(
         <ul key={items[0].id} className="mb-4">
           {items.map((item) => (
-            <NotionBlock key={item.id} block={item} firstImageBlockIds={firstImageBlockIds} />
+            <NotionBlock
+              key={item.id}
+              block={item}
+              firstImageBlockIds={firstImageBlockIds}
+            />
           ))}
-        </ul>,
+        </ul>
       );
       continue;
     }
@@ -469,15 +611,23 @@ export function NotionBlocks({
       rendered.push(
         <ol key={items[0].id} className="mb-4">
           {items.map((item) => (
-            <NotionBlock key={item.id} block={item} firstImageBlockIds={firstImageBlockIds} />
+            <NotionBlock
+              key={item.id}
+              block={item}
+              firstImageBlockIds={firstImageBlockIds}
+            />
           ))}
-        </ol>,
+        </ol>
       );
       continue;
     }
 
     rendered.push(
-      <NotionBlock key={block.id} block={block} firstImageBlockIds={firstImageBlockIds} />,
+      <NotionBlock
+        key={block.id}
+        block={block}
+        firstImageBlockIds={firstImageBlockIds}
+      />
     );
     i++;
   }
