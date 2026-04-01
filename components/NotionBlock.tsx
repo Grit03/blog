@@ -38,7 +38,7 @@ async function LinkPreview({
           />
         </div>
         <div className="flex min-w-0 flex-col">
-          <div className="truncate font-semibold break-words">
+          <div className="truncate font-semibold wrap-break-word">
             {title}
             <ExternalLink className="mb-1 ml-0.5 inline size-4 text-[#737373]" />
           </div>
