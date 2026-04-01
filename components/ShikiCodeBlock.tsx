@@ -53,7 +53,7 @@ function toShikiLang(notionLang: string): string {
 }
 
 const codeBlockClassName =
-  "mb-4 overflow-x-auto rounded-lg text-sm leading-relaxed [&_pre]:!m-0 [&_pre]:!p-4 [&_pre]:!bg-background-highlight";
+  "mb-4 overflow-x-auto rounded-lg text-sm leading-relaxed [&_pre]:!m-0 [&_pre]:!p-4 [&_pre]:!bg-background-highlight bg-background-highlight [&_pre]:w-fit";
 
 export async function ShikiCodeBlock({
   code,
