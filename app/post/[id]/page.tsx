@@ -7,7 +7,7 @@ import { Tag } from "@/components/PostCard/Tag";
 import { PostTableOfContents } from "@/components/PostTableOfContents";
 import { cn } from "@/lib/utils";
 
-export const revalidate = false;
+export const revalidate = 3600;
 
 type Props = {
   params: Promise<{ id: string }>;
