@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "img.notionusercontent.com",
-        pathname: "/secure.notion-static.com/**",
+        pathname: "/**",
       },
       {
         protocol: "https",
