@@ -111,16 +111,17 @@ function RichTextSpan({
             node = (
               <a
                 href={text.href}
-                className="bg-background-highlight my-1.5 flex items-center gap-2 rounded-md px-2.5 py-2 text-[0.9rem] font-medium text-[#737373] underline transition-colors hover:bg-zinc-200"
+                className="bg-background-highlight mt-3 mb-5.5 flex items-center gap-2 rounded-md px-2.5 py-2 text-[0.9rem] font-medium text-[#737373] underline transition-colors hover:bg-zinc-200"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 {iconUrl && (
                   <Image
                     src={iconUrl}
-                    alt=""
+                    alt={`링크 미리보기 아이콘 (${title || "제목 없음"})`}
                     width={20}
                     height={20}
+                    size="sm"
                     className="h-5 w-5 shrink-0"
                     unoptimized
                   />
@@ -171,6 +172,20 @@ function RichTextSpan({
       })}
     </>
   );
+}
+
+function toNotionImageUrl(s3Url: string, blockId: string): string {
+  try {
+    const url = new URL(s3Url);
+    if (!url.hostname.includes("prod-files-secure.s3")) return s3Url;
+    const parts = url.pathname.slice(1).split("/");
+    if (parts.length < 3) return s3Url;
+    const [workspaceId, fileId, ...rest] = parts;
+    const filename = rest.join("/");
+    return `https://www.notion.so/image/attachment%3A${fileId}%3A${filename}?table=block&id=${blockId}&spaceId=${workspaceId}&width=2000`;
+  } catch {
+    return s3Url;
+  }
 }
 
 function getBlockContent(block: BlockWithChildren) {
@@ -501,10 +516,13 @@ export function NotionBlock({
       return <hr className="my-8 border-[#ebebeb]" />;
 
     case "image": {
-      const src =
+      const rawSrc =
         content.type === "external" ? content.external.url : content.file?.url;
+      const src =
+        content.type === "file" && rawSrc
+          ? toNotionImageUrl(rawSrc, block.id)
+          : rawSrc;
       const caption = content.caption?.[0]?.plain_text;
-      const isPriorityImage = firstImageBlockIds?.includes(block.id) ?? false;
       return (
         <figure className="mb-6">
           {src && (
@@ -516,7 +534,7 @@ export function NotionBlock({
               sizes="(max-width: 800px) 100vw, 800px"
               quality={82}
               className="w-full"
-              priority={isPriorityImage}
+              priority={true}
               imageClassName="rounded-xl w-full max-w-[800px] mx-auto h-auto"
             />
           )}
