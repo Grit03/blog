@@ -18,12 +18,12 @@ function BookmarkBlockFallback({
     }
   })();
   return (
-    <div className="mx-auto mb-3 max-w-[800px]">
+    <div className="mx-auto mb-3 max-w-200">
       <a
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex min-h-[130px] overflow-hidden rounded-lg border border-[#e3e3e3] no-underline transition-colors hover:bg-[#efefef]"
+        className="flex min-h-32.5 overflow-hidden rounded-lg border border-[#e3e3e3] no-underline transition-colors hover:bg-[#efefef]"
       >
         <div className="flex min-w-0 flex-1 flex-col justify-between gap-1.5 px-4 py-3">
           <span className="text-md line-clamp-1 animate-pulse font-medium text-[#737373]">
@@ -59,12 +59,12 @@ async function BookmarkBlockInner({
   const faviconUrl = meta?.favicon;
 
   return (
-    <div className="mx-auto mb-3 max-w-[800px]">
+    <div className="mx-auto mb-3 max-w-200">
       <a
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex min-h-[130px] overflow-hidden rounded-lg border border-[#e3e3e3] no-underline transition-colors hover:bg-[#efefef]"
+        className="flex min-h-32.5 overflow-hidden rounded-lg border border-[#e3e3e3] no-underline transition-colors hover:bg-[#efefef]"
       >
         <div className="flex min-w-0 flex-1 flex-col justify-between gap-1.5 px-4 py-3">
           {meta?.title ? (
@@ -72,7 +72,7 @@ async function BookmarkBlockInner({
               {meta.title}
             </span>
           ) : (
-            <span className="text-md text-foreground line-clamp-1 font-medium text-[#737373]">
+            <span className="text-md text-foreground line-clamp-1 font-medium">
               미리보기를 불러올 수 없습니다
             </span>
           )}
@@ -88,6 +88,7 @@ async function BookmarkBlockInner({
                 alt=""
                 width={16}
                 height={16}
+                size="sm"
                 className="h-4 w-4 shrink-0 rounded-sm"
                 imageClassName="rounded-sm"
                 unoptimized
@@ -98,12 +99,12 @@ async function BookmarkBlockInner({
         </div>
 
         {meta?.image && (
-          <div className="relative w-[190px] shrink-0 border-l border-[#e3e3e3] sm:block sm:w-[230px]">
+          <div className="relative w-47.5 shrink-0 border-l border-[#e3e3e3] sm:block sm:w-57.5">
             <Image
               src={meta.image}
               alt={meta.title ?? "링크 썸네일"}
               fill
-              className="absolute inset-0"
+              className="absolute inset-0 h-full w-full rounded-none"
               imageClassName="object-cover"
               unoptimized
             />
