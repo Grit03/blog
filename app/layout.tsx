@@ -18,6 +18,7 @@ const sriracha = Sriracha({
 const pretendard = localFont({
   src: "../public/font/PretendardVariable.woff2",
   variable: "--font-pretendard",
+  weight: "100 900",
   display: "fallback",
 });
 
