@@ -14,7 +14,7 @@ export default async function Home() {
   const posts = await getPosts();
 
   return (
-    <div className="sm: flex w-full flex-col px-4 sm:px-10">
+    <div className="flex w-full flex-col px-4 sm:px-10">
       <div className="mx-auto flex w-full flex-1 gap-10 py-6 lg:max-w-6xl">
         <main className="flex-1">
           <p className="mb-4 text-sm text-[#737373]">
