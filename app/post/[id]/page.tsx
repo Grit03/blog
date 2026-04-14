@@ -97,10 +97,12 @@ export default async function PostPage({ params }: Props) {
       let text = "";
       if (block.type === "heading_1") {
         depth = 0;
-        text = block.heading_1?.rich_text[0].plain_text ?? "";
+        text =
+          block.heading_1?.rich_text.map((v) => v.plain_text).join(" ") ?? "";
       } else if (block.type === "heading_2") {
         depth = 1;
-        text = block.heading_2?.rich_text[0].plain_text ?? "";
+        text =
+          block.heading_2?.rich_text.map((v) => v.plain_text).join(" ") ?? "";
       } else {
         depth = 2;
         const content = (
@@ -108,7 +110,7 @@ export default async function PostPage({ params }: Props) {
             heading_3?: { rich_text: { plain_text: string }[] };
           }
         ).heading_3;
-        text = content?.rich_text[0].plain_text ?? "";
+        text = content?.rich_text.map((v) => v.plain_text).join(" ") ?? "";
       }
       return { id: block.id, text, depth };
     });
