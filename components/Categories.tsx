@@ -8,13 +8,13 @@ type CategoriesProps = {
 
 export function Categories({ currentSlug }: CategoriesProps) {
   return (
-    <aside className="flex-shrink-0 w-[215px] hidden lg:block">
-      <h2 className="text-sm font-semibold text-[#242424] mb-3">Categories</h2>
+    <aside className="hidden w-53.75 shrink-0 lg:block">
+      <h2 className="mb-3 text-sm font-semibold text-[#242424]">Categories</h2>
       <nav className="flex flex-col gap-1.5" aria-label="카테고리">
         <Link
           href="/"
           className={cn(
-            "block w-full py-2 px-3 text-sm rounded-md text-center transition font-medium",
+            "block w-full rounded-md px-3 py-2 text-center text-sm font-medium transition",
             currentSlug === null
               ? "bg-primary text-white"
               : "bg-[#E8E8E8] text-[#242424] hover:bg-[#D4D4D4]"
@@ -27,7 +27,7 @@ export function Categories({ currentSlug }: CategoriesProps) {
             key={slug}
             href={`/category/${slug}`}
             className={cn(
-              "block w-full py-2 px-3 text-sm rounded-md text-center transition font-medium",
+              "block w-full rounded-md px-3 py-2 text-center text-sm font-medium transition",
               currentSlug === slug
                 ? "bg-primary text-white"
                 : "bg-[#E8E8E8] text-[#242424] hover:bg-[#D4D4D4]"
@@ -43,12 +43,12 @@ export function Categories({ currentSlug }: CategoriesProps) {
 
 export function MiniCategories({ currentSlug }: CategoriesProps) {
   return (
-    <aside className="mt-3 mb-1 block lg:hidden">
-      <nav className="flex gap-1.5" aria-label="카테고리">
+    <aside className="no-scrollbar mt-3 mb-1 block overflow-x-scroll lg:hidden">
+      <nav className="flex gap-1.5 py-2" aria-label="카테고리">
         <Link
           href="/"
           className={cn(
-            "block w-full py-2 px-3 text-sm rounded-md text-center transition font-medium",
+            "block w-1/5 min-w-11.5 shrink-0 rounded-md px-3 py-2 text-center text-xs font-medium transition sm:w-full sm:text-sm",
             currentSlug === null
               ? "bg-primary text-white"
               : "bg-[#E8E8E8] text-[#242424] hover:bg-[#D4D4D4]"
@@ -61,7 +61,7 @@ export function MiniCategories({ currentSlug }: CategoriesProps) {
             key={slug}
             href={`/category/${slug}`}
             className={cn(
-              "block w-full py-2 px-3 text-sm rounded-md text-center transition font-medium",
+              "block w-1/5 min-w-11.5 shrink-0 rounded-md px-3 py-2 text-center text-xs font-medium transition sm:w-full sm:text-sm",
               currentSlug === slug
                 ? "bg-primary text-white"
                 : "bg-[#E8E8E8] text-[#242424] hover:bg-[#D4D4D4]"
