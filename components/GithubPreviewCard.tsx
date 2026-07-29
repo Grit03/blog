@@ -46,14 +46,15 @@ const STATE_META: Partial<
     label: "Open",
     className: "text-[#1a7f37] border-[#1a7f37]",
   },
+  // 머지(보라)와 구분되도록 이슈 종료는 파랑 — 깃허브는 둘 다 보라라 색만으로는 구분이 안 된다
   "issue:completed": {
     Icon: CircleCheck,
     label: "Closed",
-    className: "text-[#8250df] border-[#8250df]",
+    className: "text-[#0969da] border-[#0969da]",
   },
   "issue:not_planned": {
     Icon: CircleSlash,
-    label: "Closed",
+    label: "Not planned",
     className: "text-[#59636e] border-[#59636e]",
   },
 };
@@ -128,6 +129,7 @@ export function GithubPreviewCard({
           <div className="truncate text-xs text-[#737373]">
             {preview.repo}
             {preview.author && ` · ${preview.author.login}`}
+            {` · ${preview.kind === "pull" ? "Pull request" : "Issue"}`}
           </div>
           {meta && (
             <span
