@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { ArrowUp } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { scrollBehavior } from "@/lib/scroll";
 
 export function ScrollToTop() {
   const [visible, setVisible] = useState(false);
@@ -18,8 +19,7 @@ export function ScrollToTop() {
     <button
       type="button"
       aria-label="맨 위로"
-      // prefers-reduced-motion이 켜져 있으면 브라우저가 smooth를 알아서 무시한다
-      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+      onClick={() => window.scrollTo({ top: 0, behavior: scrollBehavior() })}
       className={cn(
         "bg-surface text-subtle border-hairline hover:text-primary fixed right-5 bottom-5 z-40 flex size-11 items-center justify-center rounded-full border shadow-md transition-all sm:right-8 sm:bottom-8",
         visible

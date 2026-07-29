@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 import { cn } from "@/lib/utils";
+import { scrollBehavior } from "@/lib/scroll";
 
 export type MinimapItem = {
   id: string;
@@ -11,7 +12,7 @@ export type MinimapItem = {
 };
 
 /** 오른쪽 정렬이라 선이 짧아질수록 안쪽으로 들어가 계단처럼 보인다 */
-const WIDTH_BY_DEPTH = ["w-11", "w-8", "w-5"];
+const WIDTH_BY_DEPTH = ["w-7", "w-5", "w-3"];
 
 export function PostMinimap({ items }: { items: MinimapItem[] }) {
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -43,12 +44,22 @@ export function PostMinimap({ items }: { items: MinimapItem[] }) {
     };
   }, [items]);
 
+  const jumpTo = (e: MouseEvent<HTMLAnchorElement>, id: string) => {
+    const el = document.getElementById(id);
+    // 못 찾으면 브라우저 기본 동작(해시 이동)에 맡긴다
+    if (!el) return;
+    e.preventDefault();
+    // 제목의 scroll-mt-24가 반영되어 헤더에 가리지 않는다
+    el.scrollIntoView({ behavior: scrollBehavior(), block: "start" });
+    window.history.replaceState(null, "", `#${id}`);
+  };
+
   if (items.length === 0) return null;
 
   return (
     <nav
       aria-label="본문 목차"
-      className="fixed top-1/2 right-6 z-30 hidden -translate-y-1/2 flex-col items-end gap-1 xl:flex"
+      className="fixed top-1/2 right-6 z-30 hidden -translate-y-1/2 flex-col items-end gap-0.5 xl:flex"
     >
       {items.map((item) => {
         const active = activeId === item.id;
@@ -56,6 +67,7 @@ export function PostMinimap({ items }: { items: MinimapItem[] }) {
           <a
             key={item.id}
             href={`#${item.id}`}
+            onClick={(e) => jumpTo(e, item.id)}
             className="group flex items-center justify-end gap-2 py-0.5"
           >
             <span
@@ -69,7 +81,7 @@ export function PostMinimap({ items }: { items: MinimapItem[] }) {
             <span
               className={cn(
                 "h-0.5 shrink-0 rounded-full transition-all duration-300 ease-out",
-                WIDTH_BY_DEPTH[item.depth] ?? "w-5",
+                WIDTH_BY_DEPTH[item.depth] ?? "w-3",
                 active
                   ? // 얇은 선이라 색만으로는 약해서, primary 번짐을 얹어 밝아 보이게 한다
                     "bg-primary shadow-[0_0_10px_2px] shadow-primary/55"
