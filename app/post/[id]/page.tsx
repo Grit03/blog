@@ -9,12 +9,12 @@ import {
   getPageCover,
   getPageExcerpt,
   getFirstImageBlockIds,
-  type BlockWithChildren,
+  // type BlockWithChildren,
 } from "@/lib/notion";
 import { getPageTags } from "@/lib/notion";
 import { NotionBlocks, RichTextSpan } from "@/components/NotionBlock";
 import { Tag } from "@/components/PostCard/Tag";
-import { PostTableOfContents } from "@/components/PostTableOfContents";
+// import { PostTableOfContents } from "@/components/PostTableOfContents";
 import { cn } from "@/lib/utils";
 
 export const revalidate = false;
@@ -86,42 +86,44 @@ export default async function PostPage({ params }: Props) {
     day: "numeric",
   });
 
-  const contentTable = blocks
-    .filter(
-      (b): b is BlockWithChildren =>
-        b.type === "heading_1" ||
-        b.type === "heading_2" ||
-        b.type === "heading_3"
-    )
-    .map((block) => {
-      let depth = 0;
-      let text = "";
-      if (block.type === "heading_1") {
-        depth = 0;
-        text =
-          block.heading_1?.rich_text.map((v) => v.plain_text).join("") ?? "";
-      } else if (block.type === "heading_2") {
-        depth = 1;
-        text =
-          block.heading_2?.rich_text.map((v) => v.plain_text).join("") ?? "";
-      } else {
-        depth = 2;
-        const content = (
-          block as unknown as {
-            heading_3?: { rich_text: { plain_text: string }[] };
-          }
-        ).heading_3;
-        text = content?.rich_text.map((v) => v.plain_text).join("") ?? "";
-      }
-      return { id: block.id, text, depth };
-    });
+  // 목차 임시 비활성화
+  // const contentTable = blocks
+  //   .filter(
+  //     (b): b is BlockWithChildren =>
+  //       b.type === "heading_1" ||
+  //       b.type === "heading_2" ||
+  //       b.type === "heading_3"
+  //   )
+  //   .map((block) => {
+  //     let depth = 0;
+  //     let text = "";
+  //     if (block.type === "heading_1") {
+  //       depth = 0;
+  //       text =
+  //         block.heading_1?.rich_text.map((v) => v.plain_text).join("") ?? "";
+  //     } else if (block.type === "heading_2") {
+  //       depth = 1;
+  //       text =
+  //         block.heading_2?.rich_text.map((v) => v.plain_text).join("") ?? "";
+  //     } else {
+  //       depth = 2;
+  //       const content = (
+  //         block as unknown as {
+  //           heading_3?: { rich_text: { plain_text: string }[] };
+  //         }
+  //       ).heading_3;
+  //       text = content?.rich_text.map((v) => v.plain_text).join("") ?? "";
+  //     }
+  //     return { id: block.id, text, depth };
+  //   });
 
   return (
     <div className="w-full">
       <div
         className={cn(
-          "relative mx-auto w-full px-4.5 sm:px-10 sm:py-10 md:max-w-4xl xl:px-0",
-          contentTable.length > 0 && "md:max-w-5xl xl:pr-60"
+          "relative mx-auto w-full px-4.5 sm:px-10 sm:py-10 md:max-w-4xl xl:px-0"
+          // 목차 임시 비활성화
+          // contentTable.length > 0 && "md:max-w-5xl xl:pr-60"
         )}
       >
         <article className="min-w-0 flex-1">
@@ -149,13 +151,14 @@ export default async function PostPage({ params }: Props) {
             />
           </section>
         </article>
-        {contentTable.length > 0 && (
+        {/* 목차 임시 비활성화 */}
+        {/* {contentTable.length > 0 && (
           <aside className="absolute inset-y-20 left-[80%] hidden w-68 xl:block">
             <div className="sticky top-20 rounded-md border px-4 py-3">
               <PostTableOfContents items={contentTable} />
             </div>
           </aside>
-        )}
+        )} */}
       </div>
     </div>
   );
