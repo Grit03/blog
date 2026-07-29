@@ -6,6 +6,8 @@ import { BookmarkBlock } from "./BookmarkBlock";
 import { cn } from "@/lib/utils";
 import { ExternalLink, GitPullRequestArrow } from "lucide-react";
 import { fetchOgMeta } from "@/lib/fetch";
+import { fetchGithubPreview, parseGithubIssueUrl } from "@/lib/github";
+import { GithubPreviewCard } from "./GithubPreviewCard";
 
 async function LinkPreview({
   url,
@@ -14,6 +16,18 @@ async function LinkPreview({
   url: string;
   fallbackText: string;
 }) {
+  if (parseGithubIssueUrl(url)) {
+    // 빌드 타임 데이터는 초기 렌더링용 — 최신 상태는 카드가 클라이언트에서 다시 동기화한다
+    const initialPreview = await fetchGithubPreview(url);
+    return (
+      <GithubPreviewCard
+        url={url}
+        initialPreview={initialPreview}
+        fallbackText={fallbackText}
+      />
+    );
+  }
+
   const metaInfo = await fetchOgMeta(url);
 
   if (
