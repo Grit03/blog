@@ -81,20 +81,21 @@ body {
 
 .dark {
   color-scheme: dark;
-  --background: #16171a;
+  /* 완전한 검정 대신 살짝 푸른기 도는 진회색 — 흰 글자와의 대비가 과하지 않다 */
+  --background: #1e1f24;
   --foreground: #e8e8ec;
-  --background-highlight: #212228;
+  --background-highlight: #2b2c32;
 
   --subtle: #a0a0a9;
-  --faint: #7e7f88;
+  --faint: #8c8d96;
   --quiet: #bcbcc4;
-  --surface: #1b1c20;
-  --surface-hover: #26272d;
-  --chip: #26272d;
-  --chip-hover: #33343b;
+  --surface: #25262b;
+  --surface-hover: #313239;
+  --chip: #313239;
+  --chip-hover: #3f4048;
   --chip-foreground: #e2e2e8;
-  --hairline: #2d2e35;
-  --code: #2b2c33;
+  --hairline: #3a3b43;
+  --code: #36373f;
   --code-foreground: #ff8ba7;
 
   --card: oklch(0.205 0 0);
