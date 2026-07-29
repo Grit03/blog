@@ -14,6 +14,9 @@ export type MinimapItem = {
 /** 오른쪽 정렬이라 선이 짧아질수록 안쪽으로 들어가 계단처럼 보인다 */
 const WIDTH_BY_DEPTH = ["w-7", "w-5", "w-3"];
 
+/** 이 선을 지난 제목을 "읽고 있는 절"로 본다 (헤더 높이 + 여유) */
+const READING_LINE = 100;
+
 export function PostMinimap({ items }: { items: MinimapItem[] }) {
   const [activeId, setActiveId] = useState<string | null>(null);
 
@@ -23,11 +26,27 @@ export function PostMinimap({ items }: { items: MinimapItem[] }) {
     let frame = 0;
     const update = () => {
       frame = 0;
-      // 화면 상단을 지난 제목 중 마지막 것이 지금 읽고 있는 절이다
+      const viewport = window.innerHeight;
+      const maxScroll = document.documentElement.scrollHeight - viewport;
+      const remaining = Math.max(0, maxScroll - window.scrollY);
+
+      /*
+       * 기준선을 상단 100px에 고정하면 문서 끝의 제목들은 거기까지 올라올 만큼
+       * 스크롤이 남아있지 않아 영영 활성화되지 않는다.
+       * 바닥에 가까워질수록 기준선을 내려(맨 아래에서는 뷰포트 하단까지)
+       * 남은 제목들이 차례로 활성화되게 한다.
+       */
+      const line =
+        remaining >= viewport
+          ? READING_LINE
+          : READING_LINE +
+            ((viewport - remaining) * (viewport - READING_LINE)) / viewport;
+
+      // 기준선을 지난 제목 중 마지막 것이 지금 읽고 있는 절이다
       let current: string | null = null;
       for (const { id } of items) {
         const el = document.getElementById(id);
-        if (el && el.getBoundingClientRect().top <= 100) current = id;
+        if (el && el.getBoundingClientRect().top <= line) current = id;
       }
       setActiveId(current ?? items[0].id);
     };
