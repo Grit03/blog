@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { Image } from "@/components/Image";
+import Image from "next/image";
 import { fetchOgMeta } from "@/lib/fetch";
 
 /** OG 메타 없이 바로 보여주는 링크 카드 (Suspense fallback용) */
@@ -88,9 +88,7 @@ async function BookmarkBlockInner({
                 alt=""
                 width={16}
                 height={16}
-                size="sm"
                 className="h-4 w-4 shrink-0 rounded-sm"
-                imageClassName="rounded-sm"
                 unoptimized
               />
             )}
@@ -104,8 +102,8 @@ async function BookmarkBlockInner({
               src={meta.image}
               alt={meta.title ?? "링크 썸네일"}
               fill
-              className="absolute inset-0 h-full w-full rounded-none"
-              imageClassName="object-cover"
+              sizes="(max-width: 640px) 190px, 230px"
+              className="object-cover"
               unoptimized
             />
           </div>

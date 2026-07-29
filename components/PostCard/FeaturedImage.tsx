@@ -1,12 +1,11 @@
-import { Image } from "@/components/Image";
+import Image from "next/image";
+import { canOptimize } from "@/lib/image";
 
 type FeaturedImageProps = {
   src?: string;
   alt: string;
   /** LCP용: 목록 상단 1~2개 카드에 true 권장 */
   priority?: boolean;
-  /** 대표 이미지가 없을 때 사용할 플레이스홀더 배경 색 */
-  placeholderClassName?: string;
 };
 
 export function FeaturedImage({
@@ -14,15 +13,20 @@ export function FeaturedImage({
   alt = "No image found",
   priority = false,
 }: FeaturedImageProps) {
+  const resolvedSrc = src ?? "/image/placeholder.png";
+
   return (
-    <Image
-      src={src ?? "/image/placeholder.png"}
-      alt={alt}
-      fill
-      priority={priority}
-      sizes="(max-width: 768px) 100vw, 280px"
-      className="relative flex-shrink-0 w-full aspect-[280/180] md:w-[280px] md:h-[180px] md:aspect-auto overflow-hidden rounded-xl self-start"
-      imageClassName="object-cover object-center w-full h-full group-hover:scale-110 transition-transform duration-300"
-    />
+    // fill을 쓰려면 부모가 relative + 크기를 갖고 있어야 한다
+    <div className="relative aspect-[280/180] w-full flex-shrink-0 self-start overflow-hidden rounded-xl md:aspect-auto md:h-[180px] md:w-[280px]">
+      <Image
+        src={resolvedSrc}
+        alt={alt}
+        fill
+        priority={priority}
+        sizes="(max-width: 768px) 100vw, 280px"
+        unoptimized={!canOptimize(resolvedSrc)}
+        className="object-cover object-center transition-transform duration-300 group-hover:scale-110"
+      />
+    </div>
   );
 }

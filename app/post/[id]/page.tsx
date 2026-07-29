@@ -9,15 +9,15 @@ import {
   getPageCover,
   getPageExcerpt,
   getFirstImageBlockIds,
-  // type BlockWithChildren,
 } from "@/lib/notion";
 import { getPageTags } from "@/lib/notion";
 import { NotionBlocks, RichTextSpan } from "@/components/NotionBlock";
 import { Tag } from "@/components/PostCard/Tag";
-// import { PostTableOfContents } from "@/components/PostTableOfContents";
-import { cn } from "@/lib/utils";
+import { PostMinimap } from "@/components/PostMinimap";
 
 export const revalidate = false;
+
+const HEADING_DEPTH = { heading_1: 0, heading_2: 1, heading_3: 2 } as const;
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -119,36 +119,29 @@ export default async function PostPage({ params }: Props) {
     }),
   };
 
-  // 목차 임시 비활성화
-  // const contentTable = blocks
-  //   .filter(
-  //     (b): b is BlockWithChildren =>
-  //       b.type === "heading_1" ||
-  //       b.type === "heading_2" ||
-  //       b.type === "heading_3"
-  //   )
-  //   .map((block) => {
-  //     let depth = 0;
-  //     let text = "";
-  //     if (block.type === "heading_1") {
-  //       depth = 0;
-  //       text =
-  //         block.heading_1?.rich_text.map((v) => v.plain_text).join("") ?? "";
-  //     } else if (block.type === "heading_2") {
-  //       depth = 1;
-  //       text =
-  //         block.heading_2?.rich_text.map((v) => v.plain_text).join("") ?? "";
-  //     } else {
-  //       depth = 2;
-  //       const content = (
-  //         block as unknown as {
-  //           heading_3?: { rich_text: { plain_text: string }[] };
-  //         }
-  //       ).heading_3;
-  //       text = content?.rich_text.map((v) => v.plain_text).join("") ?? "";
-  //     }
-  //     return { id: block.id, text, depth };
-  //   });
+  // 우측 미니맵용 — 최상위 제목만 모은다 (중첩 블록 안의 제목은 목차에 넣지 않는다)
+  const contentTable = blocks.flatMap((block) => {
+    if (
+      block.type !== "heading_1" &&
+      block.type !== "heading_2" &&
+      block.type !== "heading_3"
+    ) {
+      return [];
+    }
+    const richText =
+      block.type === "heading_1"
+        ? block.heading_1.rich_text
+        : block.type === "heading_2"
+          ? block.heading_2.rich_text
+          : block.heading_3.rich_text;
+    const text = richText
+      .map((t) => t.plain_text)
+      .join("")
+      .trim();
+    return text
+      ? [{ id: block.id, text, depth: HEADING_DEPTH[block.type] }]
+      : [];
+  });
 
   return (
     <div className="w-full">
@@ -158,13 +151,8 @@ export default async function PostPage({ params }: Props) {
           __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
         }}
       />
-      <div
-        className={cn(
-          "relative mx-auto w-full px-4.5 sm:px-10 sm:py-10 md:max-w-200 xl:px-0"
-          // 목차 임시 비활성화
-          // contentTable.length > 0 && "md:max-w-5xl xl:pr-60"
-        )}
-      >
+      <PostMinimap items={contentTable} />
+      <div className="relative mx-auto w-full px-4.5 sm:px-10 sm:py-10 md:max-w-200 xl:px-0">
         <article className="min-w-0 flex-1">
           <header className="mb-7">
             {tags.length > 0 && (
@@ -190,14 +178,6 @@ export default async function PostPage({ params }: Props) {
             />
           </section>
         </article>
-        {/* 목차 임시 비활성화 */}
-        {/* {contentTable.length > 0 && (
-          <aside className="absolute inset-y-20 left-[80%] hidden w-68 xl:block">
-            <div className="sticky top-20 rounded-md border px-4 py-3">
-              <PostTableOfContents items={contentTable} />
-            </div>
-          </aside>
-        )} */}
       </div>
     </div>
   );

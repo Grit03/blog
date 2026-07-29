@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Geist, Sriracha } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { MainNav } from "@/components/Header/MainNav";
+import { ScrollToTop } from "@/components/ScrollToTop";
 import { themeInitScript } from "@/lib/theme";
 import { Analytics } from '@vercel/analytics/next';
 
@@ -106,7 +107,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#f5f5f5" },
-    { media: "(prefers-color-scheme: dark)", color: "#1e1f24" },
+    { media: "(prefers-color-scheme: dark)", color: "#16171a" },
   ],
 };
 
@@ -147,6 +148,7 @@ export default function RootLayout({
           </div>
         </header>
         <main className="flex-1 py-6">{children}</main>
+        <ScrollToTop />
         <Analytics />
       </body>
     </html>

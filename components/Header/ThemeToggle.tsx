@@ -11,13 +11,21 @@ function applyTheme(dark: boolean) {
   root.style.colorScheme = dark ? "dark" : "light";
 }
 
+/** 전환하는 250ms 동안만 트랜지션을 켠다 — globals.css의 .theme-transition 참고 */
+function applyThemeWithTransition(dark: boolean) {
+  const root = document.documentElement;
+  root.classList.add("theme-transition");
+  applyTheme(dark);
+  window.setTimeout(() => root.classList.remove("theme-transition"), 250);
+}
+
 export function ThemeToggle() {
   // 사용자가 직접 고르기 전까지는 OS 설정 변화를 그대로 따라간다
   useEffect(() => {
     const media = window.matchMedia("(prefers-color-scheme: dark)");
     const onChange = (e: MediaQueryListEvent) => {
       if (localStorage.getItem(THEME_STORAGE_KEY)) return;
-      applyTheme(e.matches);
+      applyThemeWithTransition(e.matches);
     };
     media.addEventListener("change", onChange);
     return () => media.removeEventListener("change", onChange);
@@ -25,7 +33,7 @@ export function ThemeToggle() {
 
   const toggle = () => {
     const next = !document.documentElement.classList.contains("dark");
-    applyTheme(next);
+    applyThemeWithTransition(next);
     try {
       localStorage.setItem(THEME_STORAGE_KEY, next ? "dark" : "light");
     } catch {

@@ -81,21 +81,20 @@ body {
 
 .dark {
   color-scheme: dark;
-  /* 완전한 검정 대신 살짝 푸른기 도는 진회색 — 흰 글자와의 대비가 과하지 않다 */
-  --background: #1e1f24;
+  --background: #16171a;
   --foreground: #e8e8ec;
-  --background-highlight: #2b2c32;
+  --background-highlight: #212228;
 
   --subtle: #a0a0a9;
-  --faint: #8c8d96;
+  --faint: #7e7f88;
   --quiet: #bcbcc4;
-  --surface: #25262b;
-  --surface-hover: #313239;
-  --chip: #313239;
-  --chip-hover: #3f4048;
+  --surface: #1b1c20;
+  --surface-hover: #26272d;
+  --chip: #26272d;
+  --chip-hover: #33343b;
   --chip-foreground: #e2e2e8;
-  --hairline: #3a3b43;
-  --code: #36373f;
+  --hairline: #2d2e35;
+  --code: #2b2c33;
   --code-foreground: #ff8ba7;
 
   --card: oklch(0.205 0 0);
@@ -195,6 +194,32 @@ body {
 
   html {
     @apply font-sans;
+  }
+}
+
+/*
+ * 테마 전환 순간에만 켜지는 트랜지션.
+ * 상시로 걸면 첫 로드에도 색이 서서히 나타나고, hover 같은 다른 전환과도 엉킨다.
+ * 토글이 이 클래스를 잠깐 붙였다 뗀다.
+ */
+.theme-transition,
+.theme-transition *,
+.theme-transition *::before,
+.theme-transition *::after {
+  transition:
+    background-color 250ms ease,
+    border-color 250ms ease,
+    color 250ms ease,
+    fill 250ms ease !important;
+  transition-delay: 0ms !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-transition,
+  .theme-transition *,
+  .theme-transition *::before,
+  .theme-transition *::after {
+    transition: none !important;
   }
 }
 

@@ -2,7 +2,8 @@ import { Fragment } from "react";
 import type { RichTextItemResponse } from "@notionhq/client";
 import { toNotionImageUrl, type BlockWithChildren } from "@/lib/notion";
 import { ShikiCodeBlock } from "./ShikiCodeBlock";
-import { Image } from "@/components/Image";
+import Image from "next/image";
+import { canOptimize } from "@/lib/image";
 import { BookmarkBlock } from "./BookmarkBlock";
 import { HeadingAnchor } from "./HeadingAnchor";
 import { cn } from "@/lib/utils";
@@ -150,7 +151,6 @@ export function RichTextSpan({
                     alt={`링크 미리보기 아이콘 (${title || "제목 없음"})`}
                     width={20}
                     height={20}
-                    size="sm"
                     className="h-5 w-5 shrink-0"
                     unoptimized
                   />
@@ -555,9 +555,9 @@ export function NotionBlock({
               height={600}
               sizes="(max-width: 800px) 100vw, 800px"
               quality={82}
-              className="w-full"
-              priority={true}
-              imageClassName="rounded-xl w-full max-w-[800px] mx-auto h-auto"
+              priority
+              unoptimized={!canOptimize(src)}
+              className="mx-auto h-auto w-full max-w-[800px] rounded-xl"
             />
           )}
           {caption && (
