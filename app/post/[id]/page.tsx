@@ -144,7 +144,7 @@ export default async function PostPage({ params }: Props) {
             </h1>
             <time className="text-sm text-neutral-500">{createdAt}</time>
           </header>
-          <section className="text-base leading-relaxed break-keep">
+          <section className="text-base leading-[1.85] break-keep">
             <NotionBlocks
               blocks={blocks}
               firstImageBlockIds={getFirstImageBlockIds(blocks)}

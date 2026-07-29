@@ -88,7 +88,8 @@ export function RichTextSpan({
   richTexts: RichTextItemResponse[];
   id: string;
 }) {
-  if (richTexts.length === 0) return <div className="h-5"></div>;
+  // <p> 안에 들어가므로 div가 아닌 span이어야 브라우저가 문단을 쪼개지 않는다
+  if (richTexts.length === 0) return <span className="block h-2" />;
 
   return (
     <>
@@ -245,19 +246,23 @@ export function NotionBlock({
 
   switch (block.type) {
     case "paragraph": {
+      // 엔터만 친 빈 문단 — 문단 간격이 이미 충분하므로 살짝만 더 띄운다
+      if (content.rich_text.length === 0 && block.children.length === 0) {
+        return <div className="h-2" />;
+      }
       if (
         content.rich_text.length === 1 &&
         content.rich_text[0].type === "mention"
       ) {
         return (
-          <div className="mb-1 leading-relaxed">
+          <div className="mb-6">
             <RichTextSpan richTexts={content.rich_text} id={block.id} />
           </div>
         );
       }
       return (
-        <div className="mb-3">
-          <p className="leading-relaxed">
+        <div className="mb-6">
+          <p>
             <RichTextSpan richTexts={content.rich_text} id={block.id} />
           </p>
           {block.children.length > 0 && (
@@ -277,7 +282,7 @@ export function NotionBlock({
         <>
           <h1
             id={block.id}
-            className="mt-8 mb-4 scroll-mt-24 text-2xl font-bold sm:text-[1.75rem]"
+            className="mt-16 mb-4 scroll-mt-24 text-2xl leading-snug font-bold sm:text-[1.75rem]"
           >
             <RichTextSpan richTexts={content.rich_text} id={block.id} />
           </h1>
@@ -297,7 +302,7 @@ export function NotionBlock({
         <>
           <h2
             id={block.id}
-            className="mt-7 mb-4 scroll-mt-24 text-xl font-bold sm:text-[1.45rem]"
+            className="mt-12 mb-4 scroll-mt-24 text-xl leading-snug font-bold sm:text-[1.45rem]"
           >
             <RichTextSpan richTexts={content.rich_text} id={block.id} />
           </h2>
@@ -317,7 +322,7 @@ export function NotionBlock({
         <>
           <h3
             id={block.id}
-            className="mt-7 mb-4 scroll-mt-24 text-lg font-bold sm:text-[1.2rem]"
+            className="mt-9 mb-3 scroll-mt-24 text-lg leading-snug font-bold sm:text-[1.2rem]"
           >
             <RichTextSpan richTexts={content.rich_text} id={block.id} />
           </h3>
@@ -334,10 +339,10 @@ export function NotionBlock({
 
     case "bulleted_list_item":
       return (
-        <li className="mb-1 ml-6 list-disc leading-relaxed">
+        <li className="mb-2 ml-6 list-disc">
           <RichTextSpan richTexts={content.rich_text} id={block.id} />
           {block.children.length > 0 && (
-            <ul>
+            <ul className="mt-2">
               <ChildBlocks
                 blocks={block.children}
                 firstImageBlockIds={firstImageBlockIds}
@@ -349,10 +354,10 @@ export function NotionBlock({
 
     case "numbered_list_item":
       return (
-        <li className="mb-1 ml-6 list-decimal leading-relaxed">
+        <li className="mb-2 ml-6 list-decimal">
           <RichTextSpan richTexts={content.rich_text} id={block.id} />
           {block.children.length > 0 && (
-            <ol>
+            <ol className="mt-2">
               <ChildBlocks
                 blocks={block.children}
                 firstImageBlockIds={firstImageBlockIds}
@@ -364,7 +369,7 @@ export function NotionBlock({
 
     case "to_do":
       return (
-        <div className="mb-1">
+        <div className="mb-2">
           <div className="flex items-start gap-2">
             <input
               type="checkbox"
@@ -389,7 +394,7 @@ export function NotionBlock({
 
     case "toggle":
       return (
-        <details className="mb-4">
+        <details className="my-4">
           <summary className="cursor-pointer font-medium">
             <RichTextSpan richTexts={content.rich_text} id={block.id} />
           </summary>
@@ -428,7 +433,7 @@ export function NotionBlock({
 
     case "quote":
       return (
-        <blockquote className="mb-4 border-l-4 bg-[#f8f8f8] p-3 pl-4 text-[#555] italic">
+        <blockquote className="my-6 border-l-4 bg-[#f8f8f8] px-5 py-4 text-[#555] italic">
           <RichTextSpan richTexts={content.rich_text} id={block.id} />
           {block.children.length > 0 && (
             <div className="mt-2 not-italic">
@@ -443,7 +448,7 @@ export function NotionBlock({
 
     case "callout":
       return (
-        <div className="bg-background-highlight my-2 flex gap-3 rounded-xl p-4 whitespace-pre-wrap">
+        <div className="bg-background-highlight my-6 flex gap-3 rounded-xl p-5">
           {content.icon?.emoji && (
             <span className="text-xl">{content.icon.emoji}</span>
           )}
@@ -471,7 +476,7 @@ export function NotionBlock({
 
     case "column_list":
       return (
-        <div className="mb-4 flex gap-4">
+        <div className="my-6 flex gap-4">
           {block.children.map((column) => (
             <div key={column.id} className="min-w-0 flex-1">
               <ChildBlocks
@@ -495,7 +500,7 @@ export function NotionBlock({
       const hasHeader = content.has_column_header;
       const rows = block.children;
       return (
-        <div className="mb-4 overflow-x-auto">
+        <div className="my-8 overflow-x-auto">
           <div className="overflow-hidden rounded-xl border">
             <table className="w-full border-collapse text-sm">
               {rows.length > 0 && hasHeader && (
@@ -540,7 +545,7 @@ export function NotionBlock({
       return null;
 
     case "divider":
-      return <hr className="my-8 border-[#ebebeb]" />;
+      return <hr className="my-12 border-[#ebebeb]" />;
 
     case "image": {
       const rawSrc =
@@ -551,7 +556,7 @@ export function NotionBlock({
           : rawSrc;
       const caption = content.caption?.[0]?.plain_text;
       return (
-        <figure className="mb-6">
+        <figure className="my-8">
           {src && (
             <Image
               src={src}
@@ -589,7 +594,7 @@ export function NotionBlock({
 
     case "embed":
       return (
-        <div className="mb-4">
+        <div className="my-8">
           <iframe
             src={content.url}
             className="h-80 w-full rounded-lg border border-[#ddd]"
@@ -606,7 +611,7 @@ export function NotionBlock({
           ? videoUrl.split("/").pop()
           : new URL(videoUrl).searchParams.get("v");
         return (
-          <div className="mb-4 aspect-video">
+          <div className="my-8 aspect-video">
             <iframe
               src={`https://www.youtube.com/embed/${videoId}`}
               className="h-full w-full rounded-lg"
@@ -616,7 +621,7 @@ export function NotionBlock({
         );
       }
       return (
-        <video src={videoUrl} controls className="mb-4 w-full rounded-lg" />
+        <video src={videoUrl} controls className="my-8 w-full rounded-lg" />
       );
     }
 
@@ -645,7 +650,7 @@ export function NotionBlocks({
         i++;
       }
       rendered.push(
-        <ul key={items[0].id} className="mb-4">
+        <ul key={items[0].id} className="my-6">
           {items.map((item) => (
             <NotionBlock
               key={item.id}
@@ -665,7 +670,7 @@ export function NotionBlocks({
         i++;
       }
       rendered.push(
-        <ol key={items[0].id} className="mb-4">
+        <ol key={items[0].id} className="my-6">
           {items.map((item) => (
             <NotionBlock
               key={item.id}
