@@ -198,27 +198,61 @@ body {
 }
 
 /*
- * 테마 전환 순간에만 켜지는 트랜지션.
- * 상시로 걸면 첫 로드에도 색이 서서히 나타나고, hover 같은 다른 전환과도 엉킨다.
- * 토글이 이 클래스를 잠깐 붙였다 뗀다.
+ * 테마 전환 애니메이션.
+ *
+ * 예전에는 `.theme-transition *`로 문서 전 노드에 트랜지션을 걸었다. 긴 글 한 장이
+ * 1,600 노드쯤 되고 그중 Shiki 토큰 span만 770개라, 250ms 동안 수천 개의 트랜지션이
+ * 동시에 돌았다. color/background-color는 컴포지터가 못 맡는 속성이라 전부 리페인트로
+ * 이어지고, 그만큼 전환이 눈에 띄게 밀렸다.
+ *
+ * 지금은 두 갈래다.
+ *  - View Transition을 지원하면 전/후 스냅샷을 GPU에서 크로스페이드한다.
+ *    비용이 DOM 크기와 무관하게 일정하다. (ThemeToggle 참고)
+ *  - 미지원 브라우저는 아래 .theme-transition 폴백을 탄다.
  */
-.theme-transition,
-.theme-transition *,
-.theme-transition *::before,
-.theme-transition *::after {
+
+/* 테마 토글이 건 전환만 잡는다 — 나중에 라우팅 전환이 생겨도 서로 안 건드리게 */
+:root.theme-view-transition::view-transition-old(root),
+:root.theme-view-transition::view-transition-new(root) {
+  animation-duration: 250ms;
+  animation-timing-function: ease;
+}
+
+/*
+ * 폴백. 큰 면에만 걸어도 자식들은 상속된 색을 따라 움직이므로,
+ * 노드마다 트랜지션을 만들지 않고 같은 그림이 나온다.
+ */
+.theme-transition body,
+.theme-transition header,
+.theme-transition main,
+.theme-transition footer {
   transition:
     background-color 250ms ease,
     border-color 250ms ease,
-    color 250ms ease,
-    fill 250ms ease !important;
-  transition-delay: 0ms !important;
+    color 250ms ease;
+  transition-delay: 0ms;
+}
+
+/*
+ * Shiki는 토큰 하나가 span 하나여서 색이 바뀌는 노드가 글 길이에 비례해 늘어난다.
+ * 위 규칙이 큰 면만 잡으니 지금은 걸릴 일이 없지만, 나중에 범위를 넓히더라도
+ * 코드 블록만은 즉시 전환되도록 못을 박아 둔다.
+ */
+.theme-transition .shiki,
+.theme-transition .shiki * {
+  transition: none !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .theme-transition,
-  .theme-transition *,
-  .theme-transition *::before,
-  .theme-transition *::after {
+  :root.theme-view-transition::view-transition-old(root),
+  :root.theme-view-transition::view-transition-new(root) {
+    animation: none !important;
+  }
+
+  .theme-transition body,
+  .theme-transition header,
+  .theme-transition main,
+  .theme-transition footer {
     transition: none !important;
   }
 }
