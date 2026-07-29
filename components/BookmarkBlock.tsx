@@ -23,19 +23,19 @@ function BookmarkBlockFallback({
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex min-h-32.5 overflow-hidden rounded-lg border border-[#e3e3e3] no-underline transition-colors hover:bg-[#efefef]"
+        className="flex min-h-32.5 overflow-hidden rounded-lg border border-hairline no-underline transition-colors hover:bg-surface-hover"
       >
         <div className="flex min-w-0 flex-1 flex-col justify-between gap-1.5 px-4 py-3">
-          <span className="text-md line-clamp-1 animate-pulse font-medium text-[#737373]">
+          <span className="text-md line-clamp-1 animate-pulse font-medium text-subtle">
             미리보기 불러오는 중…
           </span>
           <span className="mt-auto flex items-center gap-1.5">
-            <span className="truncate text-xs text-[#999]">{hostname}</span>
+            <span className="truncate text-xs text-faint">{hostname}</span>
           </span>
         </div>
       </a>
       {caption && (
-        <p className="mt-1.5 px-0.5 text-xs text-[#999]">{caption}</p>
+        <p className="mt-1.5 px-0.5 text-xs text-faint">{caption}</p>
       )}
     </div>
   );
@@ -64,7 +64,7 @@ async function BookmarkBlockInner({
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex min-h-32.5 overflow-hidden rounded-lg border border-[#e3e3e3] no-underline transition-colors hover:bg-[#efefef]"
+        className="flex min-h-32.5 overflow-hidden rounded-lg border border-hairline no-underline transition-colors hover:bg-surface-hover"
       >
         <div className="flex min-w-0 flex-1 flex-col justify-between gap-1.5 px-4 py-3">
           {meta?.title ? (
@@ -77,7 +77,7 @@ async function BookmarkBlockInner({
             </span>
           )}
           {meta?.description && (
-            <span className="line-clamp-2 text-xs leading-relaxed text-[#999]">
+            <span className="line-clamp-2 text-xs leading-relaxed text-faint">
               {meta.description}
             </span>
           )}
@@ -94,12 +94,12 @@ async function BookmarkBlockInner({
                 unoptimized
               />
             )}
-            <span className="truncate text-xs text-[#999]">{hostname}</span>
+            <span className="truncate text-xs text-faint">{hostname}</span>
           </span>
         </div>
 
         {meta?.image && (
-          <div className="relative w-47.5 shrink-0 border-l border-[#e3e3e3] sm:block sm:w-57.5">
+          <div className="relative w-47.5 shrink-0 border-l border-hairline sm:block sm:w-57.5">
             <Image
               src={meta.image}
               alt={meta.title ?? "링크 썸네일"}
@@ -113,7 +113,7 @@ async function BookmarkBlockInner({
       </a>
 
       {caption && (
-        <p className="mt-1.5 px-0.5 text-xs text-[#999]">{caption}</p>
+        <p className="mt-1.5 px-0.5 text-xs text-faint">{caption}</p>
       )}
     </div>
   );

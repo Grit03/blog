@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { ThemeToggle } from "./ThemeToggle";
 
 function GithubIcon({ className }: { className?: string }) {
   return (
@@ -18,7 +19,8 @@ function GithubIcon({ className }: { className?: string }) {
 
 export function MainNav() {
   return (
-    <nav className="flex items-center gap-3 text-sm font-medium text-[#525252]">
+    <nav className="text-quiet flex items-center gap-3 text-sm font-medium">
+      <ThemeToggle />
       <Button
         variant="ghost"
         size="lg"

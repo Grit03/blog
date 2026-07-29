@@ -44,7 +44,7 @@ async function LinkPreview({
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className="hover:bg-background-highlight flex cursor-pointer items-center gap-2.5 rounded-sm border-[1.4px] border-gray-300 px-4.5 py-3.5 text-sm"
+        className="hover:bg-background-highlight flex cursor-pointer items-center gap-2.5 rounded-sm border-[1.4px] border-hairline px-4.5 py-3.5 text-sm"
       >
         <div className="relative size-8.5 overflow-hidden rounded-full">
           <img
@@ -55,11 +55,11 @@ async function LinkPreview({
         <div className="flex min-w-0 flex-col">
           <div className="truncate font-semibold wrap-break-word">
             {title}
-            <ExternalLink className="mb-1 ml-0.5 inline size-4 text-[#737373]" />
+            <ExternalLink className="mb-1 ml-0.5 inline size-4 text-subtle" />
           </div>
           <div className="flex items-center gap-1.5">
             <GitPullRequestArrow className="text-primary size-3.5 shrink-0" />
-            <div className="truncate text-xs text-[#737373]">
+            <div className="truncate text-xs text-subtle">
               {`${infoDetails[1]} · ${author} · ${infoDetails[2]}`}
             </div>
           </div>
@@ -71,7 +71,7 @@ async function LinkPreview({
   return (
     <a
       href={url}
-      className="hover:text-primary text-[#737373] underline transition-colors"
+      className="hover:text-primary text-subtle underline transition-colors"
       target="_blank"
       rel="noopener noreferrer"
     >
@@ -115,7 +115,7 @@ export function RichTextSpan({
           node = (
             <code
               className={cn(
-                "mx-0.5 rounded bg-[#e8e8e8] px-1 py-0.5 text-[0.85em] text-[#c7254e]",
+                "bg-code text-code-foreground mx-0.5 rounded px-1 py-0.5 text-[0.85em]",
                 text.annotations.bold && "font-semibold"
               )}
             >
@@ -139,7 +139,7 @@ export function RichTextSpan({
             node = (
               <a
                 href={text.href}
-                className="bg-background-highlight mt-3 mb-5.5 flex items-center gap-2 rounded-md px-2.5 py-2 text-[0.9rem] font-medium text-[#737373] underline transition-colors hover:bg-zinc-200"
+                className="bg-background-highlight mt-3 mb-5 flex items-center gap-2 rounded-md px-2.5 py-2 text-[0.9rem] font-medium text-subtle underline transition-colors hover:bg-surface-hover"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -174,7 +174,7 @@ export function RichTextSpan({
             node = (
               <a
                 href={mention.page.id}
-                className="hover:text-primary text-[#737373] underline transition-colors"
+                className="hover:text-primary text-subtle underline transition-colors"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -187,7 +187,7 @@ export function RichTextSpan({
           node = (
             <a
               href={text.href}
-              className="hover:text-primary text-[#737373] underline transition-colors"
+              className="hover:text-primary text-subtle underline transition-colors"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -241,13 +241,13 @@ export function NotionBlock({
         content.rich_text[0].type === "mention"
       ) {
         return (
-          <div className="mb-5">
+          <div className="mb-4.5">
             <RichTextSpan richTexts={content.rich_text} id={block.id} />
           </div>
         );
       }
       return (
-        <div className="mb-5">
+        <div className="mb-4.5">
           <p>
             <RichTextSpan richTexts={content.rich_text} id={block.id} />
           </p>
@@ -363,7 +363,7 @@ export function NotionBlock({
               readOnly
               className="mt-1.5"
             />
-            <span className={content.checked ? "text-[#999] line-through" : ""}>
+            <span className={content.checked ? "text-faint line-through" : ""}>
               <RichTextSpan richTexts={content.rich_text} id={block.id} />
             </span>
           </div>
@@ -419,7 +419,7 @@ export function NotionBlock({
 
     case "quote":
       return (
-        <blockquote className="my-5 border-l-4 bg-[#f8f8f8] px-5 py-4 text-[#555] italic">
+        <blockquote className="my-5 border-l-4 bg-surface px-5 py-4 text-quiet italic">
           <RichTextSpan richTexts={content.rich_text} id={block.id} />
           {block.children.length > 0 && (
             <div className="mt-2 not-italic">
@@ -531,7 +531,7 @@ export function NotionBlock({
       return null;
 
     case "divider":
-      return <hr className="my-12 border-[#ebebeb]" />;
+      return <hr className="my-12 border-hairline" />;
 
     case "image": {
       const rawSrc =
@@ -557,7 +557,7 @@ export function NotionBlock({
             />
           )}
           {caption && (
-            <figcaption className="mt-2 text-center text-sm text-[#888]">
+            <figcaption className="mt-2 text-center text-sm text-faint">
               {caption}
             </figcaption>
           )}
@@ -583,7 +583,7 @@ export function NotionBlock({
         <div className="my-8">
           <iframe
             src={content.url}
-            className="h-80 w-full rounded-lg border border-[#ddd]"
+            className="h-80 w-full rounded-lg border border-hairline"
             allowFullScreen
           />
         </div>

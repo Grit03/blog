@@ -1,10 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import Link from "next/link";
 import { Geist, Sriracha } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { MainNav } from "@/components/Header/MainNav";
+import { themeInitScript } from "@/lib/theme";
 import { Analytics } from '@vercel/analytics/next';
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
@@ -102,14 +103,27 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f5f5f5" },
+    { media: "(prefers-color-scheme: dark)", color: "#16171a" },
+  ],
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" className={cn("font-sans", geist.variable)}>
+    <html
+      lang="ko"
+      className={cn("font-sans", geist.variable)}
+      // 아래 인라인 스크립트가 하이드레이션 전에 class/style을 건드린다
+      suppressHydrationWarning
+    >
       <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <link rel="preconnect" href="https://img.notionusercontent.com" />
         <link rel="dns-prefetch" href="https://www.notion.so" />
         <link

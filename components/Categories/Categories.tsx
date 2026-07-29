@@ -9,15 +9,15 @@ export type CategoriesProps = {
 export function Categories({ currentSlug }: CategoriesProps) {
   return (
     <aside className="hidden w-53.75 shrink-0 lg:block">
-      <h2 className="mb-3 text-sm font-semibold text-[#242424]">Categories</h2>
+      <h2 className="mb-3 text-foreground text-sm font-semibold">Categories</h2>
       <nav className="flex flex-col gap-1.5" aria-label="카테고리">
         <Link
           href="/"
           className={cn(
             "block w-full rounded-md px-3 py-2 text-center text-sm font-medium transition",
             currentSlug === null
-              ? "bg-primary text-white"
-              : "bg-[#E8E8E8] text-[#242424] hover:bg-[#D4D4D4]"
+              ? "bg-primary text-primary-foreground"
+              : "bg-chip text-chip-foreground hover:bg-chip-hover"
           )}
         >
           전체
@@ -29,8 +29,8 @@ export function Categories({ currentSlug }: CategoriesProps) {
             className={cn(
               "block w-full rounded-md px-3 py-2 text-center text-sm font-medium transition",
               currentSlug === slug
-                ? "bg-primary text-white"
-                : "bg-[#E8E8E8] text-[#242424] hover:bg-[#D4D4D4]"
+                ? "bg-primary text-primary-foreground"
+                : "bg-chip text-chip-foreground hover:bg-chip-hover"
             )}
           >
             {label}

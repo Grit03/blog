@@ -49,8 +49,8 @@ export function MiniCategories({ currentSlug }: CategoriesProps) {
           className={cn(
             "block w-1/5 min-w-11.5 shrink-0 rounded-md px-3 py-2 text-center text-xs font-medium transition select-none sm:text-sm",
             currentSlug === null
-              ? "bg-primary text-white"
-              : "bg-[#E8E8E8] text-[#242424] hover:bg-[#D4D4D4]"
+              ? "bg-primary text-primary-foreground"
+              : "bg-chip text-chip-foreground hover:bg-chip-hover"
           )}
         >
           전체
@@ -63,8 +63,8 @@ export function MiniCategories({ currentSlug }: CategoriesProps) {
             className={cn(
               "block w-1/5 min-w-11.5 shrink-0 rounded-md px-3 py-2 text-center text-xs font-medium transition select-none sm:text-sm",
               currentSlug === slug
-                ? "bg-primary text-white"
-                : "bg-[#E8E8E8] text-[#242424] hover:bg-[#D4D4D4]"
+                ? "bg-primary text-primary-foreground"
+                : "bg-chip text-chip-foreground hover:bg-chip-hover"
             )}
           >
             {label}

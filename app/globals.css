@@ -5,11 +5,25 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  color-scheme: light;
   /* 로고 클로버 그린과 조화: 세이지/포레스트 그린 (hue 148) */
   --primary: oklch(0.48 0.1 148);
   --background-highlight: #ececec;
   --background: #f5f5f5;
   --foreground: #2e2e2e;
+
+  /* 라이트/다크 공통 의미 토큰 — 라이트 값은 기존 하드코딩 색을 그대로 옮긴 것 */
+  --subtle: #737373; /* 보조 텍스트·링크·메타 정보 */
+  --faint: #999999; /* 캡션·호스트명 등 가장 옅은 텍스트 */
+  --quiet: #545454; /* 목록 요약문·인용문 */
+  --surface: #f8f8f8; /* 인용문 배경 */
+  --surface-hover: #efefef; /* 북마크 카드 hover */
+  --chip: #e8e8e8; /* 카테고리 버튼 */
+  --chip-hover: #d4d4d4;
+  --chip-foreground: #242424;
+  --hairline: #e3e3e3; /* 구분선·카드 테두리 */
+  --code: #e8e8e8; /* 인라인 코드 */
+  --code-foreground: #c7254e;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
@@ -53,13 +67,6 @@
   --breakpoint-wide: 90rem;
 }
 
-/* @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-} */
-
 body {
   font-family:
     var(--font-pretendard),
@@ -73,14 +80,30 @@ body {
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
+  color-scheme: dark;
+  --background: #16171a;
+  --foreground: #e8e8ec;
+  --background-highlight: #212228;
+
+  --subtle: #a0a0a9;
+  --faint: #7e7f88;
+  --quiet: #bcbcc4;
+  --surface: #1b1c20;
+  --surface-hover: #26272d;
+  --chip: #26272d;
+  --chip-hover: #33343b;
+  --chip-foreground: #e2e2e8;
+  --hairline: #2d2e35;
+  --code: #2b2c33;
+  --code-foreground: #ff8ba7;
+
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
+  /* 어두운 배경에서도 클로버 그린이 살아 있도록 라이트보다 밝게 */
+  --primary: oklch(0.78 0.14 148);
+  --primary-foreground: oklch(0.22 0.03 148);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
@@ -108,6 +131,18 @@ body {
 
 @theme inline {
   --font-sans: var(--font-sans);
+  --color-subtle: var(--subtle);
+  --color-faint: var(--faint);
+  --color-quiet: var(--quiet);
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
+  --color-chip: var(--chip);
+  --color-chip-hover: var(--chip-hover);
+  --color-chip-foreground: var(--chip-foreground);
+  --color-hairline: var(--hairline);
+  --color-code: var(--code);
+  --color-code-foreground: var(--code-foreground);
+  --color-background-highlight: var(--background-highlight);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -160,4 +195,19 @@ body {
   html {
     @apply font-sans;
   }
+}
+
+/*
+ * Shiki를 dual 테마(one-light / one-dark-pro)로 뽑으면 토큰마다
+ * --shiki-light / --shiki-dark 변수만 실리고 color는 비어 있다.
+ * 어느 쪽을 쓸지는 여기서 .dark 유무로 결정한다.
+ */
+.shiki,
+.shiki span {
+  color: var(--shiki-light);
+}
+
+.dark .shiki,
+.dark .shiki span {
+  color: var(--shiki-dark);
 }

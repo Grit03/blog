@@ -59,14 +59,14 @@ export function Image({
   };
 
   if (error && size === "sm") {
-    return <CircleSlash className="size-4.5 text-neutral-500" />;
+    return <CircleSlash className="size-4.5 text-subtle" />;
   }
 
   if (error) {
     return (
       <div
         className={cn(
-          "bg-background-highlight flex h-50 flex-col items-center justify-center gap-5 rounded-xl text-neutral-500",
+          "bg-background-highlight flex h-50 flex-col items-center justify-center gap-5 rounded-xl text-subtle",
           className
         )}
       >

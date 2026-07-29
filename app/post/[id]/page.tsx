@@ -160,7 +160,7 @@ export default async function PostPage({ params }: Props) {
       />
       <div
         className={cn(
-          "relative mx-auto w-full px-4.5 sm:px-10 sm:py-10 md:max-w-4xl xl:px-0"
+          "relative mx-auto w-full px-4.5 sm:px-10 sm:py-10 md:max-w-200 xl:px-0"
           // 목차 임시 비활성화
           // contentTable.length > 0 && "md:max-w-5xl xl:pr-60"
         )}
@@ -181,7 +181,7 @@ export default async function PostPage({ params }: Props) {
                 "제목이 없습니다"
               )}
             </h1>
-            <time className="text-sm text-neutral-500">{createdAt}</time>
+            <time className="text-sm text-subtle">{createdAt}</time>
           </header>
           <section className="text-lg leading-7 break-keep">
             <NotionBlocks

@@ -37,7 +37,7 @@ export function PostTableOfContents({ items }: { items: TocItem[] }) {
   if (items.length === 0) return null;
 
   return (
-    <ul className="space-y-1.5 text-[#737373] sticky text-xs">
+    <ul className="text-subtle sticky space-y-1.5 text-xs">
       {
         items.map((item) => (
           <li key={item.id} className={cn(item.depth === 0 && "font-semibold")} style={{ paddingLeft: `${item.depth * 10}px` }}>

@@ -8,7 +8,7 @@ type PostDateProps = {
 export function PostDate({ date, className }: PostDateProps) {
   if (!date) return null;
   return (
-    <time className={cn("text-sm text-[#737373]", className)} dateTime={date}>
+    <time className={cn("text-sm text-subtle", className)} dateTime={date}>
       {date}
     </time>
   );

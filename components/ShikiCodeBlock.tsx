@@ -61,9 +61,12 @@ export async function ShikiCodeBlock({
   boldSegments = [],
 }: ShikiCodeBlockProps) {
   const lang = toShikiLang(language);
+  // defaultColor: false → color 대신 --shiki-light / --shiki-dark 변수만 실린다.
+  // 실제로 어느 쪽을 쓸지는 globals.css가 .dark 유무로 고른다.
   const html = await codeToHtml(code, {
     lang,
-    theme: "one-light",
+    themes: { light: "one-light", dark: "one-dark-pro" },
+    defaultColor: false,
   });
 
   if (boldSegments.length > 0) {
