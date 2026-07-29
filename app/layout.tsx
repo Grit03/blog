@@ -48,6 +48,14 @@ export const metadata: Metadata = {
     "Gyuri",
   ],
   authors: [{ name: "Gyuri", url: siteUrl }],
+  creator: "Gyuri",
+  publisher: "Gyuri",
+  alternates: {
+    canonical: siteUrl,
+    types: {
+      "application/rss+xml": `${siteUrl}/feed.xml`,
+    },
+  },
   openGraph: {
     type: "website",
     locale: "ko_KR",
@@ -75,6 +83,22 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+    other: {
+      ...(process.env.NEXT_PUBLIC_NAVER_SITE_VERIFICATION && {
+        "naver-site-verification":
+          process.env.NEXT_PUBLIC_NAVER_SITE_VERIFICATION,
+      }),
+    },
   },
 };
 

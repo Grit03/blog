@@ -84,6 +84,40 @@ export default async function PostPage({ params }: Props) {
     day: "numeric",
   });
 
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://grit03.vercel.app";
+  const postUrl = `${siteUrl}/post/${id}`;
+  const description = getPageExcerpt(page, 160);
+  const coverUrl = getPageCover(page);
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: title,
+    description,
+    datePublished: page.created_time,
+    dateModified: page.last_edited_time,
+    author: {
+      "@type": "Person",
+      name: "김규리",
+      url: siteUrl,
+    },
+    publisher: {
+      "@type": "Person",
+      name: "김규리",
+      url: siteUrl,
+    },
+    url: postUrl,
+    ...(coverUrl && { image: coverUrl }),
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": postUrl,
+    },
+    ...(tags.length > 0 && {
+      keywords: tags.map((t) => t.name).join(", "),
+    }),
+  };
+
   // 목차 임시 비활성화
   // const contentTable = blocks
   //   .filter(
@@ -117,6 +151,12 @@ export default async function PostPage({ params }: Props) {
 
   return (
     <div className="w-full">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
       <div
         className={cn(
           "relative mx-auto w-full px-4.5 sm:px-10 sm:py-10 md:max-w-4xl xl:px-0"
