@@ -8,6 +8,11 @@ type WebhookPayload = {
   entity?: { id: string; type?: string };
 };
 
+function revalidateFeeds() {
+  revalidatePath("/sitemap.xml");
+  revalidatePath("/feed.xml");
+}
+
 function revalidateAllCategories(pageId?: string) {
   revalidatePath("/");
   for (const { slug } of CATEGORIES) {
@@ -16,6 +21,7 @@ function revalidateAllCategories(pageId?: string) {
   if (pageId) {
     revalidatePath(`/post/${pageId}`);
   }
+  revalidateFeeds();
 }
 
 function revalidateForCategory(pageId: string, categoryValue: string | null) {
@@ -25,6 +31,7 @@ function revalidateForCategory(pageId: string, categoryValue: string | null) {
     const slug = getSlugByCategoryValue(categoryValue);
     if (slug) revalidatePath(`/category/${slug}`);
   }
+  revalidateFeeds();
 }
 
 export async function POST(
