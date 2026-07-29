@@ -66,7 +66,7 @@ async function LinkPreview({
   );
 }
 
-function RichTextSpan({
+export function RichTextSpan({
   richTexts,
   id,
 }: {
@@ -80,16 +80,7 @@ function RichTextSpan({
       {richTexts.map((text, i) => {
         let node: React.ReactNode = text.plain_text;
 
-        if (text.annotations.bold)
-          node = (
-            <strong key={id + i} className="font-semibold">
-              {node}
-            </strong>
-          );
-        else if (text.annotations.italic) node = <em>{node}</em>;
-        else if (text.annotations.strikethrough) node = <s>{node}</s>;
-        else if (text.annotations.underline) node = <u>{node}</u>;
-        else if (text.annotations.code)
+        if (text.annotations.code)
           node = (
             <code
               className={cn(
@@ -100,7 +91,13 @@ function RichTextSpan({
               {node}
             </code>
           );
-        else if (text.type === "mention" && text.href) {
+        if (text.annotations.bold)
+          node = <strong className="font-semibold">{node}</strong>;
+        if (text.annotations.italic) node = <em>{node}</em>;
+        if (text.annotations.strikethrough) node = <s>{node}</s>;
+        if (text.annotations.underline) node = <u>{node}</u>;
+
+        if (text.type === "mention" && text.href) {
           const { mention } = text;
           if (mention.type === "link_mention") {
             const linkMention = mention.link_mention;
@@ -163,7 +160,7 @@ function RichTextSpan({
               target="_blank"
               rel="noopener noreferrer"
             >
-              {text.plain_text}
+              {node}
               <ExternalLink className="mb-1 ml-0.5 inline size-4" />
             </a>
           );
