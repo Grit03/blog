@@ -26,7 +26,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const category = getCategoryBySlug(slug);
   if (!category) return { title: "카테고리" };
-  return { title: category.label };
+
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://grit03.vercel.app";
+  const pageUrl = `${siteUrl}/category/${slug}`;
+
+  return {
+    title: category.label,
+    description: `${category.label} 카테고리의 글 모음 — 김규리 개발 블로그`,
+    openGraph: {
+      title: `${category.label} | 김규리`,
+      description: `${category.label} 카테고리의 글 모음`,
+      url: pageUrl,
+      type: "website",
+    },
+    alternates: { canonical: pageUrl },
+  };
 }
 
 export default async function CategoryPage({ params }: Props) {
