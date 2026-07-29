@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Geist, Sriracha } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { MainNav } from "@/components/Header/MainNav";
+import { Analytics } from '@vercel/analytics/next';
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -108,6 +109,7 @@ export default function RootLayout({
           </div>
         </header>
         <main className="flex-1 py-6">{children}</main>
+        <Analytics />
       </body>
     </html>
   );
