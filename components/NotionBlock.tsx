@@ -579,6 +579,14 @@ export function NotionBlock({
       return <BookmarkBlock url={content.url} caption={caption} />;
     }
 
+    // 노션에서 URL을 "Create link preview"로 붙여넣으면 mention이 아닌 독립 블록으로 온다
+    case "link_preview":
+      return (
+        <div className="my-6">
+          <LinkPreview url={content.url} fallbackText={content.url} />
+        </div>
+      );
+
     case "embed":
       return (
         <div className="mb-4">
