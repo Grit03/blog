@@ -6,6 +6,7 @@ import { Geist, Sriracha } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { MainNav } from "@/components/Header/MainNav";
 import { ScrollToTop } from "@/components/ScrollToTop";
+import { Footer } from "@/components/Footer";
 import { themeInitScript } from "@/lib/theme";
 import { Analytics } from '@vercel/analytics/next';
 
@@ -133,7 +134,13 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={cn(pretendard.variable, tossface.variable, "antialiased")}
+        className={cn(
+          pretendard.variable,
+          tossface.variable,
+          // font-sriracha 유틸리티가 실제 폰트를 잡으려면 변수가 붙어 있어야 한다
+          sriracha.variable,
+          "flex min-h-dvh flex-col antialiased"
+        )}
       >
         <header className="w-full border-b px-3 sm:px-10">
           <div className="mx-auto flex w-full items-center justify-between py-3 lg:max-w-6xl">
@@ -148,6 +155,7 @@ export default function RootLayout({
           </div>
         </header>
         <main className="flex-1 py-6">{children}</main>
+        <Footer />
         <ScrollToTop />
         <Analytics />
       </body>
