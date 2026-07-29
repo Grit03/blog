@@ -11,7 +11,7 @@ export type MinimapItem = {
 };
 
 /** 오른쪽 정렬이라 선이 짧아질수록 안쪽으로 들어가 계단처럼 보인다 */
-const WIDTH_BY_DEPTH = ["w-7", "w-5", "w-3"];
+const WIDTH_BY_DEPTH = ["w-11", "w-8", "w-5"];
 
 export function PostMinimap({ items }: { items: MinimapItem[] }) {
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -48,7 +48,7 @@ export function PostMinimap({ items }: { items: MinimapItem[] }) {
   return (
     <nav
       aria-label="본문 목차"
-      className="fixed top-1/2 right-6 z-30 hidden -translate-y-1/2 flex-col items-end gap-2.5 xl:flex"
+      className="fixed top-1/2 right-6 z-30 hidden -translate-y-1/2 flex-col items-end gap-1 xl:flex"
     >
       {items.map((item) => {
         const active = activeId === item.id;
@@ -68,10 +68,11 @@ export function PostMinimap({ items }: { items: MinimapItem[] }) {
             </span>
             <span
               className={cn(
-                "h-0.5 shrink-0 rounded-full transition-all",
-                WIDTH_BY_DEPTH[item.depth] ?? "w-3",
+                "h-0.5 shrink-0 rounded-full transition-all duration-300 ease-out",
+                WIDTH_BY_DEPTH[item.depth] ?? "w-5",
                 active
-                  ? "bg-primary"
+                  ? // 얇은 선이라 색만으로는 약해서, primary 번짐을 얹어 밝아 보이게 한다
+                    "bg-primary shadow-[0_0_10px_2px] shadow-primary/55"
                   : "bg-subtle/40 group-hover:bg-subtle"
               )}
             />
