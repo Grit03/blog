@@ -1,4 +1,9 @@
-import { Client, type PageObjectResponse, type BlockObjectResponse } from "@notionhq/client";
+import {
+  Client,
+  type PageObjectResponse,
+  type BlockObjectResponse,
+  type RichTextItemResponse,
+} from "@notionhq/client";
 
 const notion = new Client({
   auth: process.env.NOTION_API_KEY,
@@ -141,12 +146,21 @@ export async function getPage(pageId: string): Promise<PageObjectResponse> {
   return page;
 }
 
-/** 페이지 속성에서 제목 추출 */
-export function getPageTitle(page: PageObjectResponse): string {
+/** 페이지 속성에서 제목 rich text 추출 — 인라인 코드 등 어노테이션 렌더링용 */
+export function getPageTitleRichText(
+  page: PageObjectResponse
+): RichTextItemResponse[] {
   const props = page.properties;
   const titleProp = Object.values(props).find((p) => p.type === "title");
-  if (!titleProp || titleProp.type !== "title") return "";
-  return titleProp.title[0]?.plain_text ?? "";
+  if (!titleProp || titleProp.type !== "title") return [];
+  return titleProp.title;
+}
+
+/** 페이지 속성에서 제목 추출 */
+export function getPageTitle(page: PageObjectResponse): string {
+  return getPageTitleRichText(page)
+    .map((t) => t.plain_text)
+    .join("");
 }
 
 /** 페이지 속성에서 태그(multi_select) 추출 — propertyName 지정 가능, 미지정 시 첫 multi_select 사용 */

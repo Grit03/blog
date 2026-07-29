@@ -5,13 +5,14 @@ import {
   getPage,
   getPageBlocks,
   getPageTitle,
+  getPageTitleRichText,
   getPageCover,
   getPageExcerpt,
   getFirstImageBlockIds,
   type BlockWithChildren,
 } from "@/lib/notion";
 import { getPageTags } from "@/lib/notion";
-import { NotionBlocks } from "@/components/NotionBlock";
+import { NotionBlocks, RichTextSpan } from "@/components/NotionBlock";
 import { Tag } from "@/components/PostCard/Tag";
 import { PostTableOfContents } from "@/components/PostTableOfContents";
 import { cn } from "@/lib/utils";
@@ -77,7 +78,7 @@ export default async function PostPage({ params }: Props) {
     }
   })();
 
-  const title = getPageTitle(page);
+  const titleRichText = getPageTitleRichText(page);
   const tags = getPageTags(page);
   const createdAt = new Date(page.created_time).toLocaleDateString("ko-KR", {
     year: "numeric",
@@ -98,11 +99,11 @@ export default async function PostPage({ params }: Props) {
       if (block.type === "heading_1") {
         depth = 0;
         text =
-          block.heading_1?.rich_text.map((v) => v.plain_text).join(" ") ?? "";
+          block.heading_1?.rich_text.map((v) => v.plain_text).join("") ?? "";
       } else if (block.type === "heading_2") {
         depth = 1;
         text =
-          block.heading_2?.rich_text.map((v) => v.plain_text).join(" ") ?? "";
+          block.heading_2?.rich_text.map((v) => v.plain_text).join("") ?? "";
       } else {
         depth = 2;
         const content = (
@@ -110,7 +111,7 @@ export default async function PostPage({ params }: Props) {
             heading_3?: { rich_text: { plain_text: string }[] };
           }
         ).heading_3;
-        text = content?.rich_text.map((v) => v.plain_text).join(" ") ?? "";
+        text = content?.rich_text.map((v) => v.plain_text).join("") ?? "";
       }
       return { id: block.id, text, depth };
     });
@@ -133,7 +134,11 @@ export default async function PostPage({ params }: Props) {
               </div>
             )}
             <h1 className="mb-1 text-3xl leading-tight font-bold text-pretty break-keep sm:text-[2.1rem]">
-              {title || "제목이 없습니다"}
+              {titleRichText.length > 0 ? (
+                <RichTextSpan richTexts={titleRichText} id={page.id} />
+              ) : (
+                "제목이 없습니다"
+              )}
             </h1>
             <time className="text-sm text-neutral-500">{createdAt}</time>
           </header>
