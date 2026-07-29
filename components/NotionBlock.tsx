@@ -4,6 +4,7 @@ import { toNotionImageUrl, type BlockWithChildren } from "@/lib/notion";
 import { ShikiCodeBlock } from "./ShikiCodeBlock";
 import { Image } from "@/components/Image";
 import { BookmarkBlock } from "./BookmarkBlock";
+import { HeadingAnchor } from "./HeadingAnchor";
 import { cn } from "@/lib/utils";
 import { ExternalLink, GitPullRequestArrow } from "lucide-react";
 import { fetchOgMeta } from "@/lib/fetch";
@@ -266,12 +267,13 @@ export function NotionBlock({
     case "heading_1":
       return (
         <>
-          <h1
+          <HeadingAnchor
+            as="h1"
             id={block.id}
-            className="mt-16 mb-4 scroll-mt-24 text-2xl leading-snug font-bold sm:text-[1.75rem]"
+            className="mt-16 mb-4 text-2xl leading-snug font-bold sm:text-[1.75rem]"
           >
             <RichTextSpan richTexts={content.rich_text} id={block.id} />
-          </h1>
+          </HeadingAnchor>
           {block.has_children && (
             <div className="pl-4">
               <ChildBlocks
@@ -286,12 +288,13 @@ export function NotionBlock({
     case "heading_2":
       return (
         <>
-          <h2
+          <HeadingAnchor
+            as="h2"
             id={block.id}
-            className="mt-12 mb-4 scroll-mt-24 text-xl leading-snug font-bold sm:text-[1.45rem]"
+            className="mt-12 mb-4 text-xl leading-snug font-bold sm:text-[1.45rem]"
           >
             <RichTextSpan richTexts={content.rich_text} id={block.id} />
-          </h2>
+          </HeadingAnchor>
           {block.has_children && (
             <div className="pl-4">
               <ChildBlocks
@@ -306,12 +309,13 @@ export function NotionBlock({
     case "heading_3":
       return (
         <>
-          <h3
+          <HeadingAnchor
+            as="h3"
             id={block.id}
-            className="mt-9 mb-3 scroll-mt-24 text-lg leading-snug font-bold sm:text-[1.2rem]"
+            className="mt-9 mb-3 text-lg leading-snug font-bold sm:text-[1.2rem]"
           >
             <RichTextSpan richTexts={content.rich_text} id={block.id} />
-          </h3>
+          </HeadingAnchor>
           {block.has_children && (
             <div className="pl-4">
               <ChildBlocks
