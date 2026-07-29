@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import type { RichTextItemResponse } from "@notionhq/client";
 import type { BlockWithChildren } from "@/lib/notion";
 import { ShikiCodeBlock } from "./ShikiCodeBlock";
@@ -92,7 +93,22 @@ export function RichTextSpan({
   return (
     <>
       {richTexts.map((text, i) => {
-        let node: React.ReactNode = text.plain_text;
+        // 노션의 Shift+Enter는 같은 블록 안에 \n으로 들어온다 — HTML이 접어버리므로 <br />로 살린다.
+        // 다만 블록 맨 앞뒤의 줄바꿈은 빈 줄만 만들어 간격이 벌어지므로 버린다.
+        let raw = text.plain_text;
+        if (i === 0) raw = raw.replace(/^\n+/, "");
+        if (i === richTexts.length - 1) raw = raw.replace(/\n+$/, "");
+
+        const lines = raw.split("\n");
+        let node: React.ReactNode =
+          lines.length === 1
+            ? raw
+            : lines.map((line, li) => (
+                <Fragment key={li}>
+                  {li > 0 && <br />}
+                  {line}
+                </Fragment>
+              ));
 
         if (text.annotations.code)
           node = (
