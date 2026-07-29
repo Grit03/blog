@@ -6,6 +6,7 @@ import {
   getPageTags,
   getPageExcerpt,
   getPageDate,
+  getPageCover,
 } from "@/lib/notion";
 import { PostCard } from "@/components/PostCard";
 import { Categories, MiniCategories } from "@/components/Categories";
@@ -59,11 +60,7 @@ export default async function CategoryPage({ params }: Props) {
                 <li key={page.id}>
                   <PostCard
                     href={`/post/${page.id}`}
-                    coverUrl={
-                      page.cover?.type === "file"
-                        ? page.cover.file?.url
-                        : undefined
-                    }
+                    coverUrl={getPageCover(page) ?? undefined}
                     title={getPageTitle(page)}
                     excerpt={getPageExcerpt(page)}
                     tags={getPageTags(page)}

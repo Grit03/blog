@@ -195,12 +195,40 @@ export function getPageCategory(page: PageObjectResponse): string | null {
   return null;
 }
 
-/** 페이지 대표 이미지 URL — DB 속성 "coverUrl" (URL) 사용 */
+/** 노션 S3 URL은 서명이 1시간 뒤 만료되므로, 만료되지 않는 notion.so 주소로 바꾼다 */
+export function toNotionImageUrl(s3Url: string, blockId: string): string {
+  try {
+    const url = new URL(s3Url);
+    if (!url.hostname.includes("prod-files-secure.s3")) return s3Url;
+    const parts = url.pathname.slice(1).split("/");
+    if (parts.length < 3) return s3Url;
+    const [workspaceId, fileId, ...rest] = parts;
+    const filename = rest.join("/");
+    return `https://www.notion.so/image/attachment%3A${fileId}%3A${filename}?table=block&id=${blockId}&spaceId=${workspaceId}&width=2000`;
+  } catch {
+    return s3Url;
+  }
+}
+
+/** blob:처럼 그 브라우저 탭에서만 유효한 주소는 서버에서 못 쓰므로 걸러낸다 */
+function toUsableImageUrl(raw: string | null | undefined): string | null {
+  if (!raw) return null;
+  return /^https?:\/\//i.test(raw) ? raw : null;
+}
+
+/** 페이지 대표 이미지 — DB 속성 "coverUrl"을 우선 쓰고, 없으면 노션 페이지 커버를 쓴다 */
 export function getPageCover(page: PageObjectResponse): string | null {
-  const props = page.properties;
-  const coverProp = props["coverUrl"];
-  if (coverProp && coverProp.type === "url" && coverProp.url) {
-    return coverProp.url;
+  const coverProp = page.properties["coverUrl"];
+  if (coverProp?.type === "url") {
+    const fromProp = toUsableImageUrl(coverProp.url);
+    if (fromProp) return fromProp;
+  }
+
+  const cover = page.cover;
+  if (cover?.type === "external") return toUsableImageUrl(cover.external.url);
+  if (cover?.type === "file") {
+    const url = toUsableImageUrl(cover.file.url);
+    return url ? toNotionImageUrl(url, page.id) : null;
   }
   return null;
 }

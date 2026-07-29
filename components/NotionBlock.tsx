@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import type { RichTextItemResponse } from "@notionhq/client";
-import type { BlockWithChildren } from "@/lib/notion";
+import { toNotionImageUrl, type BlockWithChildren } from "@/lib/notion";
 import { ShikiCodeBlock } from "./ShikiCodeBlock";
 import { Image } from "@/components/Image";
 import { BookmarkBlock } from "./BookmarkBlock";
@@ -200,20 +200,6 @@ export function RichTextSpan({
       })}
     </>
   );
-}
-
-function toNotionImageUrl(s3Url: string, blockId: string): string {
-  try {
-    const url = new URL(s3Url);
-    if (!url.hostname.includes("prod-files-secure.s3")) return s3Url;
-    const parts = url.pathname.slice(1).split("/");
-    if (parts.length < 3) return s3Url;
-    const [workspaceId, fileId, ...rest] = parts;
-    const filename = rest.join("/");
-    return `https://www.notion.so/image/attachment%3A${fileId}%3A${filename}?table=block&id=${blockId}&spaceId=${workspaceId}&width=2000`;
-  } catch {
-    return s3Url;
-  }
 }
 
 function getBlockContent(block: BlockWithChildren) {
