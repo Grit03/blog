@@ -255,13 +255,13 @@ export function NotionBlock({
         content.rich_text[0].type === "mention"
       ) {
         return (
-          <div className="mb-6">
+          <div className="mb-5">
             <RichTextSpan richTexts={content.rich_text} id={block.id} />
           </div>
         );
       }
       return (
-        <div className="mb-6">
+        <div className="mb-5">
           <p>
             <RichTextSpan richTexts={content.rich_text} id={block.id} />
           </p>
@@ -433,7 +433,7 @@ export function NotionBlock({
 
     case "quote":
       return (
-        <blockquote className="my-6 border-l-4 bg-[#f8f8f8] px-5 py-4 text-[#555] italic">
+        <blockquote className="my-5 border-l-4 bg-[#f8f8f8] px-5 py-4 text-[#555] italic">
           <RichTextSpan richTexts={content.rich_text} id={block.id} />
           {block.children.length > 0 && (
             <div className="mt-2 not-italic">
@@ -448,7 +448,7 @@ export function NotionBlock({
 
     case "callout":
       return (
-        <div className="bg-background-highlight my-6 flex gap-3 rounded-xl p-5">
+        <div className="bg-background-highlight my-5 flex gap-3 rounded-xl p-5">
           {content.icon?.emoji && (
             <span className="text-xl">{content.icon.emoji}</span>
           )}
@@ -476,7 +476,7 @@ export function NotionBlock({
 
     case "column_list":
       return (
-        <div className="my-6 flex gap-4">
+        <div className="my-5 flex gap-4">
           {block.children.map((column) => (
             <div key={column.id} className="min-w-0 flex-1">
               <ChildBlocks
@@ -587,7 +587,7 @@ export function NotionBlock({
     // 노션에서 URL을 "Create link preview"로 붙여넣으면 mention이 아닌 독립 블록으로 온다
     case "link_preview":
       return (
-        <div className="my-6">
+        <div className="my-5">
           <LinkPreview url={content.url} fallbackText={content.url} />
         </div>
       );
@@ -650,7 +650,7 @@ export function NotionBlocks({
         i++;
       }
       rendered.push(
-        <ul key={items[0].id} className="my-6">
+        <ul key={items[0].id} className="my-5">
           {items.map((item) => (
             <NotionBlock
               key={item.id}
@@ -670,7 +670,7 @@ export function NotionBlocks({
         i++;
       }
       rendered.push(
-        <ol key={items[0].id} className="my-6">
+        <ol key={items[0].id} className="my-5">
           {items.map((item) => (
             <NotionBlock
               key={item.id}
