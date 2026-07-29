@@ -103,7 +103,7 @@ export function PostMinimap({ items }: { items: MinimapItem[] }) {
                 WIDTH_BY_DEPTH[item.depth] ?? "w-3",
                 active
                   ? // 얇은 선이라 색만으로는 약해서, primary 번짐을 얹어 밝아 보이게 한다
-                    "bg-primary shadow-[0_0_10px_2px] shadow-primary/55"
+                    "bg-primary shadow-[0_0_6px_1px] shadow-primary/35"
                   : "bg-subtle/40 group-hover:bg-subtle"
               )}
             />
