@@ -3,6 +3,8 @@ import { getPosts, getPageTitle, getPageExcerpt } from "@/lib/notion";
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://grit03.vercel.app";
 
+export const dynamic = "force-static";
+
 export async function GET() {
   const posts = await getPosts();
 
