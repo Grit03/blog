@@ -1,0 +1,61 @@
+/*!
+ * giscus 라이트 테마 — 블로그 팔레트에 맞춘 커스텀본.
+ *
+ * giscus iframe은 body에 배경을 칠하지 않아 페이지 배경(#f5f5f5)이 그대로 비친다.
+ * 그런데 기본 light 테마는 댓글 카드도 흰색(--color-canvas-default: #fff)이라
+ * 배경과 명도 차가 4%밖에 안 나고, 테두리(#d0d7de)마저 옅어 박스 경계가 흐릿했다.
+ *
+ * 색 변수만 갈아끼우고 코드 하이라이팅 등 나머지는 원본을 그대로 물려받는다.
+ */
+@import url("https://giscus.app/themes/light.css");
+
+main {
+  /* 카드는 흰색으로 두고 테두리를 세워 회색 배경 위로 띄운다.
+     블로그가 라이트에서 --surface(#f8f8f8)를 배경보다 밝게 쓰는 것과 같은 방향이다. */
+  --color-canvas-default: #ffffff;
+  --color-canvas-overlay: #ffffff;
+  /* 탭 바·헤더처럼 흰 카드 안에서 한 단계 눌러야 하는 면 */
+  --color-canvas-subtle: #f0f0f0;
+  --color-canvas-inset: #f2f2f2;
+
+  /* 기본 #d0d7de는 푸른기가 돌아 블로그 회색 계열과 겉돈다.
+     바깥 테두리는 --hairline(#e3e3e3)보다 진해야 흰 카드가 배경에서 떨어진다. */
+  --color-border-default: #d4d4d4;
+  --color-border-muted: #e3e3e3;
+
+  --color-fg-default: #2e2e2e;
+  --color-fg-muted: #737373;
+  --color-fg-subtle: #999999;
+
+  /* 링크·멘션을 블로그 --primary(포레스트 그린)로 */
+  --color-accent-fg: oklch(0.48 0.1 148);
+  --color-accent-emphasis: oklch(0.48 0.1 148);
+
+  /* 댓글 속 인라인 코드 배경 — 블로그 --code와 맞춘다 */
+  --color-neutral-muted: #e8e8e8;
+
+  --color-btn-text: #2e2e2e;
+  --color-btn-bg: #f5f5f5;
+  --color-btn-hover-bg: #ececec;
+  --color-btn-active-bg: #e3e3e3;
+}
+
+/* 흰 카드가 배경에서 확실히 떨어지도록 아주 옅은 그림자를 얹는다 */
+.gsc-comment-box:not(.gsc-comment-box-is-reply) {
+  box-shadow: 0 1px 2px #00000008;
+}
+
+/*
+ * 입력창은 .form-control이라 카드와 같은 --color-canvas-default를 쓴다.
+ * 흰 카드 안의 흰 입력창이 되어 경계가 사라지므로 한 톤 눌러 두고,
+ * 포커스했을 때 흰색으로 올려 지금 쓰는 중이라는 걸 드러낸다.
+ *
+ * giscus가 이 클래스명을 바꾸면 기본 모습으로 돌아갈 뿐 깨지지는 않는다.
+ */
+.gsc-comment-box-textarea {
+  background-color: #f7f7f7;
+}
+
+.gsc-comment-box-textarea:focus {
+  background-color: #ffffff;
+}
