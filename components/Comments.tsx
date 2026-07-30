@@ -24,51 +24,20 @@ const GISCUS_ATTRS: Record<string, string> = {
   "data-lang": "ko",
 };
 
-const CUSTOM_LIGHT_THEME_PATH = "/giscus/light.css";
-
-/**
- * 커스텀 테마 CSS가 실제로 내려오는지 확인한 뒤에만 giscus에 넘긴다.
- *
- * giscus는 테마 스타일시트 하나로 모든 색 변수를 받는다. 그래서 그 URL이 죽으면
- * 배경도 글자색도 없는 채로 브라우저 기본색까지 떨어지고, OS가 다크 모드면
- * 라이트 화면에 흰 글자가 찍혀 아무것도 안 보이게 된다. 배포 순서가 어긋나거나
- * 파일이 사라지는 정도로 그 꼴이 나면 안 되니, 확인에 실패하면 내장 light으로 돌아간다.
- *
- * 확인 요청은 giscus와 같은 조건으로 보내야 의미가 있다. giscus는 crossorigin
- * ="anonymous"로 받아가므로 쿠키를 싣지 않는다. 우리가 쿠키를 실어 물어보면
- * Vercel 프리뷰 배포처럼 보호가 걸린 곳에서 우리만 200을 받고 giscus는 로그인
- * 페이지로 튕겨, 확인을 통과했는데 정작 테마는 죽는 상황이 된다.
- * credentials를 빼고 cors 모드로 물어보면 그 리다이렉트가 여기서도 그대로 실패한다.
- *
- * 결과는 모듈 수준에서 재사용하므로 요청은 페이지당 한 번만 나간다.
- */
-let lightTheme: Promise<string> | null = null;
-
-function resolveLightTheme() {
-  const url = `${window.location.origin}${CUSTOM_LIGHT_THEME_PATH}`;
-  lightTheme ??= fetch(url, {
-    method: "HEAD",
-    credentials: "omit",
-    mode: "cors",
-  })
-    .then((res) => (res.ok ? url : "light"))
-    .catch(() => "light");
-  return lightTheme;
-}
-
 /**
  * giscus iframe은 body에 배경을 칠하지 않아 페이지 배경이 그대로 비친다.
  * 그래서 테마가 실제로 정하는 건 댓글 카드와 입력창의 색이다.
+ *
+ * 둘 다 giscus 내장 테마를 쓴다. 테마를 URL로 넘기면 색을 마음대로 맞출 수 있지만,
+ * 그 스타일시트 하나가 giscus의 모든 색 변수를 들고 있어서 링크가 죽는 순간
+ * 위젯 전체가 브라우저 기본색으로 떨어진다. 그 위험을 안고 갈 만한 이득이 아니다.
  */
 function currentGiscusTheme() {
   // 다크: 카드를 투명하게 두면 사이트 배경(#16171a)에 그대로 녹는다.
   // 기본 dark는 카드가 #0d1117이라 페이지보다 까맣게 떠 보인다.
-  if (document.documentElement.classList.contains("dark")) {
-    return Promise.resolve("transparent_dark");
-  }
-  // 라이트: 기본 테마는 카드가 흰색인데 배경(#f5f5f5)과 명도 차가 4%뿐이라
-  // 경계가 흐릿하다. 팔레트를 맞추고 테두리를 세운 커스텀 CSS로 대체한다.
-  return resolveLightTheme();
+  return document.documentElement.classList.contains("dark")
+    ? "transparent_dark"
+    : "light";
 }
 
 export function Comments() {
@@ -78,43 +47,31 @@ export function Comments() {
     const container = containerRef.current;
     if (!container) return;
 
-    // 테마 확인이 끝난 뒤에 심는다. 먼저 심고 나중에 테마를 갈아끼우면
-    // 잘못된 색으로 한 번 그려진 뒤 바뀌는 게 보인다.
-    let cancelled = false;
-    void currentGiscusTheme().then((theme) => {
-      if (cancelled) return;
-
-      const script = document.createElement("script");
-      script.src = `${GISCUS_ORIGIN}/client.js`;
-      script.async = true;
-      script.crossOrigin = "anonymous";
-      for (const [name, value] of Object.entries(GISCUS_ATTRS)) {
-        script.setAttribute(name, value);
-      }
-      script.setAttribute("data-theme", theme);
-      container.appendChild(script);
-    });
+    const script = document.createElement("script");
+    script.src = `${GISCUS_ORIGIN}/client.js`;
+    script.async = true;
+    script.crossOrigin = "anonymous";
+    for (const [name, value] of Object.entries(GISCUS_ATTRS)) {
+      script.setAttribute(name, value);
+    }
+    script.setAttribute("data-theme", currentGiscusTheme());
+    container.appendChild(script);
 
     // client.js는 iframe을 심고 끝이라 다른 글로 넘어가도 스스로 정리하지 않는다.
     // 컨테이너를 비워야 새 글에서 위젯이 다시 심긴다.
-    return () => {
-      cancelled = true;
-      container.replaceChildren();
-    };
+    return () => container.replaceChildren();
   }, []);
 
   // 테마 토글은 <html>의 dark 클래스만 건드리므로, iframe에는 따로 알려줘야 한다
   useEffect(() => {
     const observer = new MutationObserver(() => {
-      void currentGiscusTheme().then((theme) => {
-        const iframe = document.querySelector<HTMLIFrameElement>(
-          "iframe.giscus-frame"
-        );
-        iframe?.contentWindow?.postMessage(
-          { giscus: { setConfig: { theme } } },
-          GISCUS_ORIGIN
-        );
-      });
+      const iframe = document.querySelector<HTMLIFrameElement>(
+        "iframe.giscus-frame"
+      );
+      iframe?.contentWindow?.postMessage(
+        { giscus: { setConfig: { theme: currentGiscusTheme() } } },
+        GISCUS_ORIGIN
+      );
     });
     observer.observe(document.documentElement, {
       attributes: true,
