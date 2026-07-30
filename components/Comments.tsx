@@ -34,15 +34,24 @@ const CUSTOM_LIGHT_THEME_PATH = "/giscus/light.css";
  * 라이트 화면에 흰 글자가 찍혀 아무것도 안 보이게 된다. 배포 순서가 어긋나거나
  * 파일이 사라지는 정도로 그 꼴이 나면 안 되니, 확인에 실패하면 내장 light으로 돌아간다.
  *
- * 같은 오리진 요청이고 결과를 모듈 수준에서 재사용하므로 페이지당 한 번만 나간다.
+ * 확인 요청은 giscus와 같은 조건으로 보내야 의미가 있다. giscus는 crossorigin
+ * ="anonymous"로 받아가므로 쿠키를 싣지 않는다. 우리가 쿠키를 실어 물어보면
+ * Vercel 프리뷰 배포처럼 보호가 걸린 곳에서 우리만 200을 받고 giscus는 로그인
+ * 페이지로 튕겨, 확인을 통과했는데 정작 테마는 죽는 상황이 된다.
+ * credentials를 빼고 cors 모드로 물어보면 그 리다이렉트가 여기서도 그대로 실패한다.
+ *
+ * 결과는 모듈 수준에서 재사용하므로 요청은 페이지당 한 번만 나간다.
  */
 let lightTheme: Promise<string> | null = null;
 
 function resolveLightTheme() {
-  lightTheme ??= fetch(CUSTOM_LIGHT_THEME_PATH, { method: "HEAD" })
-    .then((res) =>
-      res.ok ? `${window.location.origin}${CUSTOM_LIGHT_THEME_PATH}` : "light"
-    )
+  const url = `${window.location.origin}${CUSTOM_LIGHT_THEME_PATH}`;
+  lightTheme ??= fetch(url, {
+    method: "HEAD",
+    credentials: "omit",
+    mode: "cors",
+  })
+    .then((res) => (res.ok ? url : "light"))
     .catch(() => "light");
   return lightTheme;
 }
