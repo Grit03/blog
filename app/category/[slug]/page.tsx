@@ -54,7 +54,8 @@ export default async function CategoryPage({ params }: Props) {
   return (
     <div className="flex w-full flex-col px-4 sm:px-10">
       <div className="mx-auto flex w-full flex-1 gap-10 py-6 lg:max-w-6xl">
-        <main className="flex-1">
+        {/* 홈과 같은 이유로 min-w-0이 필요하다 — MiniCategories가 열을 넓히지 못하게 한다 */}
+        <main className="min-w-0 flex-1">
           <p className="mb-4 text-sm text-subtle">
             총 {posts.length}개의 글
           </p>
