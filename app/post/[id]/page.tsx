@@ -14,6 +14,7 @@ import { getPageTags } from "@/lib/notion";
 import { NotionBlocks, RichTextSpan } from "@/components/NotionBlock";
 import { Tag } from "@/components/PostCard/Tag";
 import { PostMinimap } from "@/components/PostMinimap";
+import { Comments } from "@/components/Comments";
 
 export const revalidate = false;
 
@@ -169,7 +170,7 @@ export default async function PostPage({ params }: Props) {
                 "제목이 없습니다"
               )}
             </h1>
-            <time className="text-sm text-subtle">{createdAt}</time>
+            <time className="text-subtle text-sm">{createdAt}</time>
           </header>
           <section className="text-lg leading-7 break-keep">
             <NotionBlocks
@@ -177,6 +178,7 @@ export default async function PostPage({ params }: Props) {
               firstImageBlockIds={getFirstImageBlockIds(blocks)}
             />
           </section>
+          <Comments />
         </article>
       </div>
     </div>
