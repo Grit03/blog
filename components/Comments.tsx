@@ -24,9 +24,17 @@ const GISCUS_ATTRS: Record<string, string> = {
   "data-lang": "ko",
 };
 
+/**
+ * giscus iframe은 body에 배경을 칠하지 않아 페이지 배경이 그대로 비친다.
+ * 그래서 테마가 실제로 정하는 건 댓글 카드와 입력창의 색이다.
+ *
+ * 둘 다 giscus 내장 테마를 쓴다. 테마를 URL로 넘기면 색을 마음대로 맞출 수 있지만,
+ * 그 스타일시트 하나가 giscus의 모든 색 변수를 들고 있어서 링크가 죽는 순간
+ * 위젯 전체가 브라우저 기본색으로 떨어진다. 그 위험을 안고 갈 만한 이득이 아니다.
+ */
 function currentGiscusTheme() {
-  // 다크에선 transparent_dark로 사이트 배경(#16171a)에 그대로 녹인다.
-  // giscus 기본 dark(#0d1117)를 쓰면 댓글 영역만 더 까맣게 뜬다.
+  // 다크: 카드를 투명하게 두면 사이트 배경(#16171a)에 그대로 녹는다.
+  // 기본 dark는 카드가 #0d1117이라 페이지보다 까맣게 떠 보인다.
   return document.documentElement.classList.contains("dark")
     ? "transparent_dark"
     : "light";
@@ -74,7 +82,12 @@ export function Comments() {
 
   return (
     <section aria-label="댓글" className="border-hairline mt-16 border-t pt-10">
-      <div ref={containerRef} />
+      {/*
+        본문에서 드래그를 이어가면 iframe이 통째로 선택 범위에 잡혀 파랗게 반전된다.
+        부모 문서의 선택에서만 빼는 것이라, iframe 안에서 댓글 텍스트를 긁는 건
+        그대로 된다 — 선택 영역은 문서마다 따로 관리되기 때문이다.
+      */}
+      <div ref={containerRef} className="select-none" />
     </section>
   );
 }
