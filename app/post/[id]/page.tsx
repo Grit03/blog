@@ -163,7 +163,7 @@ export default async function PostPage({ params }: Props) {
                 ))}
               </div>
             )}
-            <h1 className="mb-1 text-3xl leading-tight font-bold text-pretty break-keep sm:text-[2.1rem]">
+            <h1 className="mb-1 text-3xl leading-tight font-bold text-pretty wrap-break-word break-keep sm:text-[2.1rem]">
               {titleRichText.length > 0 ? (
                 <RichTextSpan richTexts={titleRichText} id={page.id} />
               ) : (
@@ -172,7 +172,14 @@ export default async function PostPage({ params }: Props) {
             </h1>
             <time className="text-subtle text-sm">{createdAt}</time>
           </header>
-          <section className="text-lg leading-7 break-keep">
+          {/*
+            break-keep(word-break: keep-all)은 한국어를 어절 단위로 접어 주는 대신,
+            공백 없이 긴 토큰은 어디서도 끊지 못해 그대로 화면 밖으로 나간다.
+            긴 경로나 URL이 인라인 코드로 들어오면 그것 하나로 페이지가 가로 스크롤됐다.
+            wrap-break-word를 같이 걸어 "다른 데서 못 끊을 때만" 단어 안에서 끊게 한다.
+            평소 줄바꿈은 그대로 어절 단위이고, 넘칠 때만 최후 수단으로 동작한다.
+          */}
+          <section className="text-lg leading-7 wrap-break-word break-keep">
             <NotionBlocks
               blocks={blocks}
               firstImageBlockIds={getFirstImageBlockIds(blocks)}
