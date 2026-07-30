@@ -17,7 +17,13 @@ export default async function Home() {
   return (
     <div className="flex w-full flex-col px-4 sm:px-10">
       <div className="mx-auto flex w-full flex-1 gap-10 py-6 lg:max-w-6xl">
-        <main className="flex-1">
+        {/*
+          min-w-0이 없으면 flex 아이템의 기본 min-width: auto 때문에 이 열이
+          내용의 최소 너비 아래로 못 줄어든다. MiniCategories의 칩 6개가
+          min-w-11.5 + shrink-0이라 최소 306px를 요구해서, 320px 화면에서는
+          가로 스크롤 대신 열 자체가 넓어지며 페이지가 밀렸다.
+        */}
+        <main className="min-w-0 flex-1">
           <p className="mb-4 text-sm text-subtle">
             총 {posts.length}개의 글
           </p>
