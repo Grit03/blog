@@ -102,6 +102,21 @@ export function RichTextSpan({
         if (i === 0) raw = raw.replace(/^\n+/, "");
         if (i === richTexts.length - 1) raw = raw.replace(/\n+$/, "");
 
+        /*
+         * 노션은 인라인 코드 같은 서식 경계에 붙는 공백을 U+00A0(줄바꿈 없는 공백)으로
+         * 내려준다. 이름 그대로 그 자리에서는 줄을 바꿀 수 없다.
+         *
+         * 그래서 `Object.defineProperty()`, `Reflect.defineProperty()`, ... 처럼
+         * 코드가 쉼표로 이어지면 사이의 공백이 전부 못 끊는 공백이라 네 덩어리가 하나의
+         * "단어"가 된다. 본문은 word-break: keep-all이라 그 단어 안에서도 끊지 못해,
+         * 375px 화면에서 문단 하나가 895px까지 늘어나며 페이지가 가로로 스크롤됐다.
+         *
+         * 일반 공백으로 되돌려 쉼표 뒤에서 자연스럽게 접히게 한다. 본문은
+         * white-space: normal이므로 보이는 모양은 그대로다. 글 전체를 뒤져 봐도 U+00A0은
+         * 늘 한 칸씩만 쓰여 있어(연속 사용 0건), 일부러 벌려 둔 간격을 망칠 일은 없다.
+         */
+        raw = raw.replace(/ /g, " ");
+
         const lines = raw.split("\n");
         let node: React.ReactNode =
           lines.length === 1
