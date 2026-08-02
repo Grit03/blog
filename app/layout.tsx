@@ -8,7 +8,8 @@ import { MainNav } from "@/components/Header/MainNav";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { Footer } from "@/components/Footer";
 import { themeInitScript } from "@/lib/theme";
-import { Analytics } from '@vercel/analytics/next';
+import { Analytics } from "@vercel/analytics/next";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -33,6 +34,12 @@ const tossface = localFont({
 });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://grit03.vercel.app";
+
+// 로컬/프리뷰에서 쏜 이벤트가 실제 지표를 흐리지 않게 프로덕션에서만 붙인다
+const gaId =
+  process.env.NODE_ENV === "production"
+    ? process.env.NEXT_PUBLIC_GA_ID
+    : undefined;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -158,6 +165,7 @@ export default function RootLayout({
         <Footer />
         <ScrollToTop />
         <Analytics />
+        {gaId && <GoogleAnalytics gaId={gaId} />}
       </body>
     </html>
   );
