@@ -20,24 +20,29 @@ export type BlockWithChildren = BlockObjectResponse & {
 };
 
 /** Notion DB에서 페이지(글) 목록 가져오기 — status가 Draft인 글은 제외 */
-export async function getPosts(category?: string | null): Promise<PageObjectResponse[]> {
+export async function getPosts(
+  category?: string | null
+): Promise<PageObjectResponse[]> {
   if (!DATABASE_ID) return [];
 
-  const publishedFilter = { property: "status", status: { equals: "Published" as const } };
+  const publishedFilter = {
+    property: "status",
+    status: { equals: "Published" as const },
+  };
 
   const filter = category
     ? {
-      and: [
-        publishedFilter,
-        { property: "category", select: { equals: category } },
-      ],
-    }
+        and: [
+          publishedFilter,
+          { property: "category", select: { equals: category } },
+        ],
+      }
     : publishedFilter;
 
   const response = await notion.dataSources.query({
     data_source_id: DATABASE_ID,
     filter: process.env.NODE_ENV === "development" ? undefined : filter,
-    sorts: [{ timestamp: "created_time", direction: "descending" }],
+    sorts: [{ property: "pulishedAt", direction: "descending" }],
   });
   return response.results.filter(
     (r): r is PageObjectResponse => r.object === "page"
@@ -45,7 +50,9 @@ export async function getPosts(category?: string | null): Promise<PageObjectResp
 }
 
 /** 한 블록의 자식을 페이지네이션 처리하여 모두 가져오기 */
-async function fetchBlockChildren(blockId: string): Promise<BlockObjectResponse[]> {
+async function fetchBlockChildren(
+  blockId: string
+): Promise<BlockObjectResponse[]> {
   const blocks: BlockObjectResponse[] = [];
   let cursor: string | undefined;
 
@@ -62,7 +69,9 @@ async function fetchBlockChildren(blockId: string): Promise<BlockObjectResponse[
       }
     }
 
-    cursor = response.has_more ? (response.next_cursor ?? undefined) : undefined;
+    cursor = response.has_more
+      ? (response.next_cursor ?? undefined)
+      : undefined;
   } while (cursor);
 
   return blocks;
@@ -73,7 +82,9 @@ async function fetchBlockChildren(blockId: string): Promise<BlockObjectResponse[
  * 모든 블록을 평탄하게 수집한 뒤 parent 관계로 트리를 재구성한다.
  * 동시 API 호출 수를 CONCURRENCY로 제한하여 rate limit을 방지한다.
  */
-export async function getPageBlocks(pageId: string): Promise<BlockWithChildren[]> {
+export async function getPageBlocks(
+  pageId: string
+): Promise<BlockWithChildren[]> {
   const CONCURRENCY = 6;
 
   const allBlocks: BlockWithChildren[] = [];
@@ -87,12 +98,14 @@ export async function getPageBlocks(pageId: string): Promise<BlockWithChildren[]
       batch.map(async (parentId) => ({
         parentId,
         blocks: await fetchBlockChildren(parentId),
-      })),
+      }))
     );
 
     for (const { parentId, blocks } of results) {
       for (const block of blocks) {
-        const bwc: BlockWithChildren = Object.assign(block, { children: [] as BlockWithChildren[] });
+        const bwc: BlockWithChildren = Object.assign(block, {
+          children: [] as BlockWithChildren[],
+        });
         allBlocks.push(bwc);
         parentMap.set(block.id, parentId);
 
@@ -124,7 +137,7 @@ export async function getPageBlocks(pageId: string): Promise<BlockWithChildren[]
 /** 블록 트리에서 문서 순서상 처음 N개 이미지 블록 ID 반환 (priority 지정에 사용) */
 export function getFirstImageBlockIds(
   blocks: BlockWithChildren[],
-  limit = 2,
+  limit = 2
 ): string[] {
   const ids: string[] = [];
   const queue: BlockWithChildren[] = [...blocks];
@@ -189,7 +202,13 @@ export function getPageCategory(page: PageObjectResponse): string | null {
   if (byName && byName.type === "select" && byName.select?.name)
     return byName.select.name;
   for (const p of Object.values(props)) {
-    if (p.type === "select" && p.select?.name && BLOG_CATEGORIES.includes(p.select.name as (typeof BLOG_CATEGORIES)[number]))
+    if (
+      p.type === "select" &&
+      p.select?.name &&
+      BLOG_CATEGORIES.includes(
+        p.select.name as (typeof BLOG_CATEGORIES)[number]
+      )
+    )
       return p.select.name;
   }
   return null;
@@ -246,13 +265,14 @@ export function getPageExcerpt(
   return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
 }
 
-/** 페이지 날짜 — created_time 또는 "Date" 속성, 포맷: YYYY. MM. DD. */
+/** pulishedAt을 YYYY. MM. DD. 형식으로 표시한다. 값이 없으면 생성 시각을 쓴다. */
 export function getPageDate(page: PageObjectResponse): string {
   const props = page.properties;
-  const dateProp = props["Date"] ?? Object.values(props).find((p) => p.type === "date");
-  const raw = dateProp && dateProp.type === "date" && dateProp.date?.start
-    ? dateProp.date.start
-    : page.created_time;
+  const dateProp = props["pulishedAt"];
+  const raw =
+    dateProp && dateProp.type === "date" && dateProp.date?.start
+      ? dateProp.date.start
+      : page.created_time;
   if (!raw) return "";
   const d = new Date(raw);
   const y = d.getFullYear();
