@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { BlogTabs } from "@/components/BlogTabs";
 import { canOptimize } from "@/lib/image";
 import { getSeries } from "@/lib/series";
 
@@ -18,7 +17,6 @@ export default async function SeriesPage() {
     // 홈·카테고리와 같은 바깥 틀을 써야 탭을 오갈 때 위치가 흔들리지 않는다.
     <div className="flex w-full flex-col px-4 sm:px-10">
       <main className="mx-auto w-full flex-1 py-6 lg:max-w-6xl">
-        <BlogTabs active="series" />
         <h1 className="sr-only">시리즈</h1>
         <p className="text-subtle mb-4 text-sm">
           총 {series.length}개의 시리즈

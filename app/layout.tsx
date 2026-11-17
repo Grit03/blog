@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Geist, Sriracha } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { MainNav } from "@/components/Header/MainNav";
+import { SiteNav } from "@/components/Header/SiteNav";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { Footer } from "@/components/Footer";
 import { themeInitScript } from "@/lib/theme";
@@ -151,13 +152,16 @@ export default function RootLayout({
       >
         <header className="w-full border-b px-3 sm:px-10">
           <div className="mx-auto flex w-full items-center justify-between py-3 lg:max-w-6xl">
-            <Link
-              href="/"
-              className="text-foreground hover:text-primary flex items-center gap-1.5 font-bold transition-colors sm:text-[1.4rem]"
-            >
-              <span>🍀</span>
-              <span className={sriracha.className}>Gyuri&apos;s Devlog</span>
-            </Link>
+            <div className="flex items-center gap-4 sm:gap-8">
+              <Link
+                href="/"
+                className="text-foreground hover:text-primary flex items-center gap-1.5 font-bold transition-colors sm:text-[1.4rem]"
+              >
+                <span>🍀</span>
+                <span className={sriracha.className}>Gyuri&apos;s Devlog</span>
+              </Link>
+              <SiteNav />
+            </div>
             <MainNav />
           </div>
         </header>
