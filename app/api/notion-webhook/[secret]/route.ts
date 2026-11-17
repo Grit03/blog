@@ -1,6 +1,6 @@
 import { revalidatePath } from "next/cache";
-import { getPage, getPageStatus, getPageCategory } from "@/lib/notion";
-import { CATEGORIES, getSlugByCategoryValue } from "@/lib/categories";
+import { getPage, getPageStatus } from "@/lib/notion";
+import { CATEGORIES } from "@/lib/categories";
 
 type WebhookPayload = {
   type?: string;
@@ -9,6 +9,10 @@ type WebhookPayload = {
 };
 
 function revalidateFeeds() {
+  // 시리즈 이동·삭제 전의 관계를 알 수 없으므로 관련 경로를 모두 무효화한다.
+  revalidatePath("/series");
+  revalidatePath("/series/[slug]", "page");
+  revalidatePath("/post/[id]", "page");
   revalidatePath("/sitemap.xml");
   revalidatePath("/feed.xml");
 }
@@ -24,19 +28,9 @@ function revalidateAllCategories(pageId?: string) {
   revalidateFeeds();
 }
 
-function revalidateForCategory(pageId: string, categoryValue: string | null) {
-  revalidatePath("/");
-  revalidatePath(`/post/${pageId}`);
-  if (categoryValue) {
-    const slug = getSlugByCategoryValue(categoryValue);
-    if (slug) revalidatePath(`/category/${slug}`);
-  }
-  revalidateFeeds();
-}
-
 export async function POST(
   req: Request,
-  { params }: { params: Promise<{ secret: string }> },
+  { params }: { params: Promise<{ secret: string }> }
 ) {
   const { secret } = await params;
 
@@ -74,18 +68,17 @@ export async function POST(
   }
 
   if (
+    eventType === "page.content_updated" ||
     eventType === "page.properties_updated" ||
     eventType === "page.created" ||
     eventType === "page.restored" ||
     eventType === "page.undeleted"
   ) {
     let status: string | null = null;
-    let category: string | null = null;
 
     try {
       const page = await getPage(pageId);
       status = getPageStatus(page);
-      category = getPageCategory(page);
     } catch {
       revalidateAllCategories(pageId);
       return Response.json({
@@ -96,15 +89,13 @@ export async function POST(
       });
     }
 
-    revalidateForCategory(pageId, category);
-    console.log("[webhook] revalidated:", pageId, "category:", category);
+    revalidateAllCategories(pageId);
 
     return Response.json({
       revalidated: true,
       event: eventType,
       pageId,
       status,
-      category,
     });
   }
 

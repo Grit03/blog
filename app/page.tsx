@@ -24,13 +24,11 @@ export default async function Home() {
           가로 스크롤 대신 열 자체가 넓어지며 페이지가 밀렸다.
         */}
         <main className="min-w-0 flex-1">
-          <p className="mb-4 text-sm text-subtle">
-            총 {posts.length}개의 글
-          </p>
+          <p className="text-subtle mb-4 text-sm">총 {posts.length}개의 글</p>
           <MiniCategories currentSlug={null} />
           {posts.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 text-center">
-              <div className="bg-muted mb-4 rounded-full p-4 text-7xl">🥺</div>
+              <div className="mb-4 text-5xl">🥺</div>
               <h3 className="text-foreground text-lg font-semibold">
                 아직 작성된 글이 없습니다
               </h3>

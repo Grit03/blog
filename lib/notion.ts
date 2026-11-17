@@ -1,3 +1,4 @@
+import { cache } from "react";
 import {
   Client,
   type PageObjectResponse,
@@ -39,14 +40,39 @@ export async function getPosts(
       }
     : publishedFilter;
 
-  const response = await notion.dataSources.query({
+  return queryPages({
     data_source_id: DATABASE_ID,
-    filter: process.env.NODE_ENV === "development" ? undefined : filter,
+    filter:
+      process.env.NODE_ENV === "development"
+        ? category
+          ? { property: "category", select: { equals: category } }
+          : undefined
+        : filter,
     sorts: [{ property: "pulishedAt", direction: "descending" }],
   });
-  return response.results.filter(
-    (r): r is PageObjectResponse => r.object === "page"
-  );
+}
+
+/** 데이터 소스의 모든 결과를 페이지네이션으로 가져온다. */
+export async function queryPages(
+  query: Parameters<typeof notion.dataSources.query>[0]
+): Promise<PageObjectResponse[]> {
+  const pages: PageObjectResponse[] = [];
+  let cursor: string | undefined;
+  do {
+    const response = await notion.dataSources.query({
+      ...query,
+      page_size: 100,
+      start_cursor: cursor,
+    });
+    for (const result of response.results) {
+      if (result.object === "page" && "properties" in result)
+        pages.push(result);
+    }
+    cursor = response.has_more
+      ? (response.next_cursor ?? undefined)
+      : undefined;
+  } while (cursor);
+  return pages;
 }
 
 /** 한 블록의 자식을 페이지네이션 처리하여 모두 가져오기 */
@@ -149,15 +175,36 @@ export function getFirstImageBlockIds(
   return ids;
 }
 
-/** 단일 페이지 가져오기 — Published 상태가 아니면 에러를 던진다 */
-export async function getPage(pageId: string): Promise<PageObjectResponse> {
-  const response = await notion.pages.retrieve({ page_id: pageId });
-  const page = response as PageObjectResponse;
-  // if (getPageStatus(page) !== "Published") {
-  //   throw new Error("Page is not published");
-  // }
-  return page;
-}
+/** 웹훅에서도 쓰는 원본 조회. 공개 여부는 렌더링 전에 검사한다. */
+export const getPage = cache(
+  async (pageId: string): Promise<PageObjectResponse> => {
+    const page = await notion.pages.retrieve({ page_id: pageId });
+    if (!("properties" in page)) throw new Error("Page is unavailable");
+    return page;
+  }
+);
+
+export const getPublishedPage = cache(
+  async (pageId: string): Promise<PageObjectResponse> => {
+    const page = await getPage(pageId);
+    const parentId =
+      page.parent.type === "data_source_id" ? page.parent.data_source_id : null;
+    const normalize = (id: string) => id.replaceAll("-", "");
+    if (
+      !DATABASE_ID ||
+      !parentId ||
+      normalize(parentId) !== normalize(DATABASE_ID) ||
+      page.archived ||
+      page.in_trash ||
+      // getPosts()처럼 개발 환경에서는 초안도 미리 볼 수 있게 한다.
+      (process.env.NODE_ENV !== "development" &&
+        getPageStatus(page) !== "Published")
+    ) {
+      throw new Error("Page is not published");
+    }
+    return page;
+  }
+);
 
 /** 페이지 속성에서 제목 rich text 추출 — 인라인 코드 등 어노테이션 렌더링용 */
 export function getPageTitleRichText(
