@@ -194,6 +194,8 @@ body {
 
   html {
     @apply font-sans;
+    /* 글이 적어 스크롤바가 없는 페이지에서도 가운데 정렬 기준을 같게 유지한다. */
+    scrollbar-gutter: stable;
   }
 }
 

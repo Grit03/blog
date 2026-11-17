@@ -1,3 +1,4 @@
+import { BlogTabs } from "@/components/BlogTabs";
 import {
   getPosts,
   getPageTitle,
@@ -24,6 +25,7 @@ export default async function Home() {
           가로 스크롤 대신 열 자체가 넓어지며 페이지가 밀렸다.
         */}
         <main className="min-w-0 flex-1">
+          <BlogTabs active="posts" />
           <p className="mb-4 text-sm text-subtle">
             총 {posts.length}개의 글
           </p>

@@ -1,8 +1,14 @@
+import { getSeries } from "@/lib/series";
+import { getPostSeriesId } from "@/lib/series-model";
+import {
+  SeriesContents,
+  SeriesPagination,
+} from "@/components/SeriesNavigation";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import {
   getPosts,
-  getPage,
+  getPublishedPage,
   getPageBlocks,
   getPageTitle,
   getPageTitleRichText,
@@ -32,7 +38,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
     const { id } = await params;
-    const page = await getPage(id);
+    const page = await getPublishedPage(id);
     const title = getPageTitle(page) || "글 상세";
     const description = getPageExcerpt(page, 160);
     const coverUrl = getPageCover(page);
@@ -70,12 +76,18 @@ export default async function PostPage({ params }: Props) {
 
   const [page, blocks] = await (async () => {
     try {
-      return await Promise.all([getPage(id), getPageBlocks(id)]);
+      const page = await getPublishedPage(id);
+      return [page, await getPageBlocks(id)] as const;
     } catch {
       notFound();
       throw new Error("unreachable");
     }
   })();
+
+  const seriesId = getPostSeriesId(page);
+  const series = seriesId
+    ? (await getSeries()).find((entry) => entry.id === seriesId)
+    : undefined;
 
   const title = getPageTitle(page) || "글 상세";
   const titleRichText = getPageTitleRichText(page);
@@ -172,6 +184,7 @@ export default async function PostPage({ params }: Props) {
             </h1>
             <time className="text-subtle text-sm">{createdAt}</time>
           </header>
+          {series && <SeriesContents series={series} pageId={id} />}
           {/*
             break-keep(word-break: keep-all)은 한국어를 어절 단위로 접어 주는 대신,
             공백 없이 긴 토큰은 어디서도 끊지 못해 그대로 화면 밖으로 나간다.
@@ -185,6 +198,7 @@ export default async function PostPage({ params }: Props) {
               firstImageBlockIds={getFirstImageBlockIds(blocks)}
             />
           </section>
+          {series && <SeriesPagination series={series} pageId={id} />}
           <Comments />
         </article>
       </div>

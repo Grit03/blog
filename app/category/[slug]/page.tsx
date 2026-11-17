@@ -1,3 +1,4 @@
+import { BlogTabs } from "@/components/BlogTabs";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import {
@@ -56,6 +57,7 @@ export default async function CategoryPage({ params }: Props) {
       <div className="mx-auto flex w-full flex-1 gap-10 py-6 lg:max-w-6xl">
         {/* 홈과 같은 이유로 min-w-0이 필요하다 — MiniCategories가 열을 넓히지 못하게 한다 */}
         <main className="min-w-0 flex-1">
+          <BlogTabs active="posts" />
           <p className="mb-4 text-sm text-subtle">
             총 {posts.length}개의 글
           </p>
