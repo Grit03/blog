@@ -3,14 +3,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { getSeries } from "@/lib/series";
+import Image from "next/image";
 import {
   getPageTitle,
   getPageCover,
   getPageExcerpt,
-  getPageTags,
   getPageDate,
 } from "@/lib/notion";
-import { PostCard } from "@/components/PostCard";
+import { canOptimize } from "@/lib/image";
 import { Button } from "@/components/ui/button";
 
 export const revalidate = false;
@@ -45,7 +45,8 @@ export default async function SeriesDetailPage({ params }: Props) {
   if (!series) notFound();
   return (
     <div className="flex w-full flex-col px-4 sm:px-10">
-      <main className="mx-auto w-full flex-1 py-6 lg:max-w-6xl">
+      {/* 레이아웃 <main>의 py-6만 써서 "전체 시리즈"를 헤더 가까이 둔다 */}
+      <main className="mx-auto w-full flex-1 lg:max-w-6xl">
         <Button
           variant="ghost"
           size="sm"
@@ -57,38 +58,64 @@ export default async function SeriesDetailPage({ params }: Props) {
             전체 시리즈
           </Link>
         </Button>
-        <header className="border-hairline mt-4 mb-6 border-b pb-6">
+        <header className="mt-3 mb-6">
           <p className="text-primary text-sm font-semibold">시리즈</p>
-          <h1 className="mt-1 text-3xl font-bold break-keep">{series.title}</h1>
+          <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
+            <h1 className="text-2xl font-bold break-keep sm:text-3xl">
+              {series.title}
+            </h1>
+            <span className="bg-chip text-quiet rounded-sm px-2 py-1 text-xs font-medium">
+              {series.posts.length}편
+            </span>
+          </div>
           {series.description && (
-            <p className="text-quiet mt-3 leading-relaxed break-keep whitespace-pre-line">
+            <p className="text-quiet mt-2 leading-relaxed break-keep whitespace-pre-line">
               {series.description}
             </p>
           )}
-          <p className="text-subtle mt-4 text-sm">총 {series.posts.length}편</p>
         </header>
-        <ol className="m-0 list-none space-y-2 p-0">
-          {series.posts.map((post, index) => (
-            <li key={post.id} className="flex gap-2 sm:gap-4">
-              <span
-                aria-hidden
-                className="bg-chip text-quiet mt-4 flex size-7 shrink-0 items-center justify-center rounded-md text-xs font-semibold tabular-nums"
-              >
-                {index + 1}
-              </span>
-              <div className="min-w-0 flex-1">
-                <PostCard
+        <ol className="border-hairline divide-hairline m-0 list-none divide-y overflow-hidden rounded-xl border p-0">
+          {series.posts.map((post, index) => {
+            const title = getPageTitle(post);
+            const excerpt = getPageExcerpt(post);
+            const src = getPageCover(post) ?? "/image/placeholder.png";
+            return (
+              <li key={post.id}>
+                <Link
                   href={`/post/${post.id}`}
-                  title={getPageTitle(post)}
-                  excerpt={getPageExcerpt(post)}
-                  coverUrl={getPageCover(post) ?? undefined}
-                  tags={getPageTags(post)}
-                  date={getPageDate(post)}
-                  priorityImage={index < 2}
-                />
-              </div>
-            </li>
-          ))}
+                  className="group hover:bg-surface-hover flex items-center gap-3 p-3 transition-colors sm:gap-4 sm:px-4"
+                >
+                  <span className="text-faint w-5 shrink-0 text-center text-sm font-semibold tabular-nums">
+                    {index + 1}
+                  </span>
+                  <div className="relative aspect-[4/3] w-20 shrink-0 overflow-hidden rounded-md sm:w-24">
+                    <Image
+                      src={src}
+                      alt=""
+                      fill
+                      priority={index < 3}
+                      sizes="96px"
+                      unoptimized={!canOptimize(src)}
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h2 className="group-hover:text-primary line-clamp-2 text-sm leading-snug font-bold break-keep transition-colors sm:text-base">
+                      {title}
+                    </h2>
+                    {excerpt && (
+                      <p className="text-quiet mt-1 line-clamp-1 text-xs sm:text-sm">
+                        {excerpt}
+                      </p>
+                    )}
+                    <time className="text-subtle mt-1.5 block text-xs">
+                      {getPageDate(post)}
+                    </time>
+                  </div>
+                </Link>
+              </li>
+            );
+          })}
         </ol>
       </main>
     </div>

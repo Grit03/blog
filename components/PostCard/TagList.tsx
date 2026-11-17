@@ -14,7 +14,7 @@ export function TagList({ tags, className }: TagListProps) {
     <ul className={cn("flex flex-wrap gap-1.5", className)} aria-label="태그 목록">
       {tags.map((tag) => (
         <li key={tag.id}>
-          <Tag name={tag.name} />
+          <Tag name={tag.name} className="md:px-1.5 md:py-0.5 md:text-[0.6875rem]" />
         </li>
       ))}
     </ul>

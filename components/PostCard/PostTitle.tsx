@@ -14,7 +14,7 @@ export function PostTitle({
   return (
     <Component
       className={cn(
-        "text-lg font-bold leading-tight line-clamp-2",
+        "text-lg font-bold leading-tight line-clamp-2 md:text-base",
         className
       )}
     >

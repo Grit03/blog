@@ -17,7 +17,7 @@ export function PostExcerpt({
   return (
     <p
       className={cn(
-        "text-sm text-quiet leading-relaxed",
+        "text-sm text-quiet leading-relaxed md:text-[0.8125rem]",
         lineClampClass,
         className
       )}
