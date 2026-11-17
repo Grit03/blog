@@ -22,7 +22,7 @@ export default async function SeriesPage() {
           총 {series.length}개의 시리즈
         </p>
         {series.length ? (
-          <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
             {series.map((entry, index) => {
               const src = entry.coverUrl ?? "/image/placeholder.png";
               return (
@@ -37,20 +37,20 @@ export default async function SeriesPage() {
                         alt=""
                         fill
                         priority={index < 3}
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 360px"
+                        sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 280px"
                         unoptimized={!canOptimize(src)}
                         className="object-cover transition-transform duration-300 group-hover:scale-105"
                       />
                     </div>
-                    <div className="flex flex-1 flex-col gap-2 p-4">
-                      <span className="bg-chip text-quiet w-fit rounded-sm px-2 py-1 text-xs font-medium">
+                    <div className="flex flex-1 flex-col gap-1.5 p-3">
+                      <span className="bg-chip text-quiet w-fit rounded-sm px-1.5 py-0.5 text-xs font-medium">
                         {entry.posts.length}편
                       </span>
-                      <h2 className="group-hover:text-primary line-clamp-2 text-lg leading-tight font-bold break-keep transition-colors">
+                      <h2 className="group-hover:text-primary line-clamp-2 text-sm leading-snug font-bold break-keep transition-colors sm:text-base">
                         {entry.title}
                       </h2>
                       {entry.description && (
-                        <p className="text-quiet line-clamp-2 text-sm leading-relaxed break-keep">
+                        <p className="text-quiet line-clamp-2 text-xs leading-relaxed break-keep">
                           {entry.description}
                         </p>
                       )}

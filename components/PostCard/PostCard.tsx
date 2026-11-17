@@ -28,7 +28,7 @@ export function PostCard({
   return (
     <Link
       href={href}
-      className="group flex min-h-[180px] flex-col gap-3 rounded-xl p-3 text-left transition md:flex-row md:gap-5.5"
+      className="group flex min-h-[162px] flex-col gap-3 rounded-xl p-3 text-left transition md:flex-row md:gap-5 md:p-2.5"
     >
       <FeaturedImage src={coverUrl} alt={title} priority={priorityImage} />
       <div className="group-hover:text-primary flex flex-1 flex-col py-1 transition-colors">
@@ -39,7 +39,7 @@ export function PostCard({
             <PostExcerpt className="flex-1 break-keep">{excerpt}</PostExcerpt>
           )}
         </div>
-        <div className="mt-3 flex justify-start">
+        <div className="mt-3 flex justify-start md:mt-2.5">
           <PostDate date={date} className="flex-shrink-0" />
         </div>
       </div>
