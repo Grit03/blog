@@ -62,7 +62,7 @@ export default async function SeriesPage() {
           </ul>
         ) : (
           <div className="flex flex-col items-center justify-center py-24 text-center">
-            <div className="bg-muted mb-4 rounded-full p-4 text-7xl">📚</div>
+            <div className="mb-4 text-5xl">📚</div>
             <h2 className="text-foreground text-lg font-semibold">
               아직 공개된 시리즈가 없습니다
             </h2>

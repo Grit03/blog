@@ -60,7 +60,7 @@ export default async function CategoryPage({ params }: Props) {
           <MiniCategories currentSlug={slug} />
           {posts.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 text-center">
-              <div className="bg-muted mb-4 rounded-full p-4 text-7xl">🥺</div>
+              <div className="mb-4 text-5xl">🥺</div>
               <h3 className="text-foreground text-lg font-semibold">
                 해당 카테고리에 글이 없습니다
               </h3>
